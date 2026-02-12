@@ -78,6 +78,7 @@ export interface BattleEvent extends BaseEvent {
 export interface BattleArmiesEvent extends BaseEvent {
     type: 'battleArmies';
     battleId: string;
+    status: number;
     teams: BattleTeam[];
 }
 
