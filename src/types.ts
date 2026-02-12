@@ -172,7 +172,7 @@ export interface RoomInfo {
 export interface TikTokLiveOptions {
     uniqueId: string;
     signServerUrl?: string;
-    apiKey?: string;
+    apiKey: string;
     autoReconnect?: boolean;
     maxReconnectAttempts?: number;
     heartbeatInterval?: number;
