@@ -1,4 +1,4 @@
-import type { LiveEvent, TikTokUser } from './types.js';
+import type { LiveEvent, TikTokUser, BattleTeam, BattleTeamUser } from './types.js';
 
 export function decodeVarint(buf: Buffer, offset: number): { value: number; offset: number } {
     let result = 0, shift = 0;
@@ -95,6 +95,10 @@ export function getInt(fields: ProtoField[], fn: number): number {
     return f ? Number(f.value) : 0;
 }
 
+export function getAllBytes(fields: ProtoField[], fn: number): Buffer[] {
+    return fields.filter(x => x.fn === fn && x.wt === 2).map(x => x.value as Buffer);
+}
+
 export function buildHeartbeat(roomId: string): Buffer {
     const payload = encodeField(1, 0, BigInt(roomId));
     return Buffer.concat([
@@ -133,83 +137,206 @@ function parseUser(data: Buffer): TikTokUser {
     const id = String(getInt(f, 1) || getStr(f, 1));
     const nickname = getStr(f, 3) || getStr(f, 5);
     const uniqueId = getStr(f, 38) || getStr(f, 4) || getStr(f, 2);
-    return { id, nickname, uniqueId: uniqueId || nickname || id };
+
+    let profilePicture: string | undefined;
+    const avatarBuf = getBytes(f, 9);
+    if (avatarBuf) {
+        try {
+            const avatarFields = decodeProto(avatarBuf);
+            const urlBuf = getBytes(avatarFields, 1);
+            if (urlBuf) profilePicture = urlBuf.toString('utf-8');
+        } catch { }
+    }
+
+    return { id, nickname, uniqueId: uniqueId || nickname || id, profilePicture };
+}
+
+function parseBattleTeam(teamBuf: Buffer): BattleTeam {
+    const fields = decodeProto(teamBuf);
+    const hostUserId = String(getInt(fields, 1));
+    const score = getInt(fields, 2);
+    const users: BattleTeamUser[] = [];
+
+    const userFields = getAllBytes(fields, 3);
+    for (const uf of userFields) {
+        try {
+            const uFields = decodeProto(uf);
+            const userBuf = getBytes(uFields, 1);
+            const userScore = getInt(uFields, 2);
+            const user = userBuf ? parseUser(userBuf) : { id: '0', nickname: '', uniqueId: '' };
+            users.push({ user, score: userScore });
+        } catch { }
+    }
+
+    return { hostUserId, score, users };
 }
 
 export function parseWebcastMessage(method: string, payload: Buffer): LiveEvent {
     const f = decodeProto(payload);
-    const userBuf = getBytes(f, 2);
-    const user = userBuf ? parseUser(userBuf) : { id: '0', nickname: '', uniqueId: '' };
     const base = { timestamp: Date.now(), msgId: String(getInt(f, 1) || '') };
 
     switch (method) {
-        case 'WebcastChatMessage':
+        case 'WebcastChatMessage': {
+            const userBuf = getBytes(f, 2);
+            const user = userBuf ? parseUser(userBuf) : { id: '0', nickname: '', uniqueId: '' };
             return { ...base, type: 'chat' as const, user, comment: getStr(f, 3) };
+        }
 
-        case 'WebcastMemberMessage':
-            return { ...base, type: 'member' as const, user, action: getInt(f, 3) };
+        case 'WebcastMemberMessage': {
+            const userBuf = getBytes(f, 2);
+            const user = userBuf ? parseUser(userBuf) : { id: '0', nickname: '', uniqueId: '' };
+            return { ...base, type: 'member' as const, user, action: getInt(f, 1) };
+        }
 
-        case 'WebcastLikeMessage':
-            return { ...base, type: 'like' as const, user, likeCount: getInt(f, 5), totalLikes: getInt(f, 6) || getInt(f, 7) };
+        case 'WebcastLikeMessage': {
+            const userBuf = getBytes(f, 5);
+            const user = userBuf ? parseUser(userBuf) : { id: '0', nickname: '', uniqueId: '' };
+            return { ...base, type: 'like' as const, user, likeCount: getInt(f, 1), totalLikes: getInt(f, 2) || getInt(f, 7) };
+        }
 
         case 'WebcastGiftMessage': {
-            const giftBuf = getBytes(f, 3);
-            let giftName = '', giftId = 0, diamondCount = 0;
-            if (giftBuf) {
-                const gf = decodeProto(giftBuf);
-                giftId = getInt(gf, 1);
-                giftName = getStr(gf, 2);
-                diamondCount = getInt(gf, 5);
-            }
+            const userBuf = getBytes(f, 7);
+            const user = userBuf ? parseUser(userBuf) : { id: '0', nickname: '', uniqueId: '' };
+            const giftId = getInt(f, 1);
             const repeatCount = getInt(f, 5);
             const repeatEnd = getInt(f, 9) === 1;
-            return { ...base, type: 'gift' as const, user, giftId, giftName, diamondCount, repeatCount, repeatEnd, combo: repeatCount > 1 && !repeatEnd };
+            const giftType = getInt(f, 6);
+            const groupId = getStr(f, 11);
+
+            let giftName = '', diamondCount = 0;
+            const giftInfoBuf = getBytes(f, 15);
+            if (giftInfoBuf) {
+                const gf = decodeProto(giftInfoBuf);
+                giftName = getStr(gf, 1);
+                diamondCount = getInt(gf, 5) || getInt(gf, 2);
+            }
+            if (!giftName) {
+                const giftBuf3 = getBytes(f, 3);
+                if (giftBuf3) {
+                    const gf3 = decodeProto(giftBuf3);
+                    if (!giftName) giftName = getStr(gf3, 2);
+                    if (!diamondCount) diamondCount = getInt(gf3, 5);
+                }
+            }
+
+            return {
+                ...base, type: 'gift' as const, user, giftId, giftName, diamondCount,
+                repeatCount, repeatEnd, combo: repeatCount > 1 && !repeatEnd,
+                giftType, groupId,
+            };
         }
 
         case 'WebcastSocialMessage': {
-            const action = getInt(f, 3);
+            const userBuf = getBytes(f, 2);
+            const user = userBuf ? parseUser(userBuf) : { id: '0', nickname: '', uniqueId: '' };
+            const actionInt = getInt(f, 1);
             const actionMap: Record<number, string> = { 1: 'follow', 2: 'share', 3: 'like' };
-            return { ...base, type: 'social' as const, user, action: actionMap[action] || `action_${action}` };
+            return { ...base, type: 'social' as const, user, action: actionMap[actionInt] || `action_${actionInt}` };
         }
 
         case 'WebcastRoomUserSeqMessage':
-            return { ...base, type: 'roomUserSeq' as const, viewerCount: getInt(f, 3), totalViewers: getInt(f, 4) };
+            return {
+                ...base, type: 'roomUserSeq' as const,
+                totalViewers: getInt(f, 1) || getInt(f, 3),
+                viewerCount: getInt(f, 2) || getInt(f, 4),
+            };
 
-        case 'WebcastLinkMicBattle':
-            return { ...base, type: 'battle' as const, status: getInt(f, 3) };
+        case 'WebcastLinkMicBattle': {
+            const battleId = String(getInt(f, 1) || getStr(f, 1));
+            const status = getInt(f, 2);
+            const battleDuration = getInt(f, 3);
+            const teams: BattleTeam[] = [];
+            const teamBufs = getAllBytes(f, 7);
+            for (const tb of teamBufs) {
+                try { teams.push(parseBattleTeam(tb)); } catch { }
+            }
+            return { ...base, type: 'battle' as const, battleId, status, battleDuration, teams };
+        }
 
-        case 'WebcastLinkMicArmies':
-            return { ...base, type: 'battleArmies' as const };
+        case 'WebcastLinkMicArmies': {
+            const battleId = String(getInt(f, 1) || getStr(f, 1));
+            const teams: BattleTeam[] = [];
+            const teamBufs = getAllBytes(f, 3);
+            for (const tb of teamBufs) {
+                try { teams.push(parseBattleTeam(tb)); } catch { }
+            }
+            return { ...base, type: 'battleArmies' as const, battleId, teams };
+        }
 
-        case 'WebcastSubNotifyMessage':
-            return { ...base, type: 'subscribe' as const, user, subMonth: getInt(f, 8) };
+        case 'WebcastSubNotifyMessage': {
+            const userBuf = getBytes(f, 2);
+            const user = userBuf ? parseUser(userBuf) : { id: '0', nickname: '', uniqueId: '' };
+            return { ...base, type: 'subscribe' as const, user, subMonth: getInt(f, 3) };
+        }
 
-        case 'WebcastEmoteChatMessage':
-            return { ...base, type: 'emoteChat' as const, user, emoteId: getStr(f, 3) };
+        case 'WebcastEmoteChatMessage': {
+            const userBuf = getBytes(f, 2);
+            const user = userBuf ? parseUser(userBuf) : { id: '0', nickname: '', uniqueId: '' };
+            let emoteId = '', emoteUrl = '';
+            const emoteBuf = getBytes(f, 3);
+            if (emoteBuf) {
+                const ef = decodeProto(emoteBuf);
+                emoteId = getStr(ef, 1);
+                const imageBuf = getBytes(ef, 2);
+                if (imageBuf) {
+                    const imgFields = decodeProto(imageBuf);
+                    emoteUrl = getStr(imgFields, 1);
+                }
+            }
+            return { ...base, type: 'emoteChat' as const, user, emoteId, emoteUrl };
+        }
 
-        case 'WebcastEnvelopeMessage':
-            return { ...base, type: 'envelope' as const, diamondCount: getInt(f, 3) };
+        case 'WebcastEnvelopeMessage': {
+            const envelopeId = String(getInt(f, 1) || getStr(f, 1));
+            return { ...base, type: 'envelope' as const, envelopeId, diamondCount: getInt(f, 3) };
+        }
 
-        case 'WebcastQuestionNewMessage':
-            return { ...base, type: 'question' as const, user, questionText: getStr(f, 3) };
+        case 'WebcastQuestionNewMessage': {
+            const userBuf = getBytes(f, 2);
+            const user = userBuf ? parseUser(userBuf) : { id: '0', nickname: '', uniqueId: '' };
+            return { ...base, type: 'question' as const, user, questionText: getStr(f, 3) || getStr(f, 4) };
+        }
 
         case 'WebcastRankUpdateMessage':
-        case 'WebcastHourlyRankMessage':
-            return { ...base, type: 'rankUpdate' as const, rankType: getStr(f, 3) };
+        case 'WebcastHourlyRankMessage': {
+            const rankType = getStr(f, 1) || `rank_${getInt(f, 1)}`;
+            const rankList: Array<{ user: TikTokUser; rank: number; score: number }> = [];
+            const listBufs = getAllBytes(f, 2);
+            for (const lb of listBufs) {
+                try {
+                    const rf = decodeProto(lb);
+                    const userBuf = getBytes(rf, 1);
+                    const rank = getInt(rf, 2);
+                    const score = getInt(rf, 3);
+                    const user = userBuf ? parseUser(userBuf) : { id: '0', nickname: '', uniqueId: '' };
+                    rankList.push({ user, rank, score });
+                } catch { }
+            }
+            return { ...base, type: 'rankUpdate' as const, rankType, rankList };
+        }
 
         case 'WebcastControlMessage':
-            return { ...base, type: 'control' as const, action: getInt(f, 2) };
+            return { ...base, type: 'control' as const, action: getInt(f, 2) || getInt(f, 1) };
 
         case 'WebcastRoomMessage':
         case 'RoomMessage':
-            return { ...base, type: 'room' as const, status: getStr(f, 3) };
+            return { ...base, type: 'room' as const, status: getInt(f, 2) };
 
-        case 'WebcastLiveIntroMessage':
-            return { ...base, type: 'liveIntro' as const, title: getStr(f, 3) };
+        case 'WebcastLiveIntroMessage': {
+            const roomId = String(getInt(f, 1));
+            return { ...base, type: 'liveIntro' as const, roomId, title: getStr(f, 4) || getStr(f, 2) };
+        }
 
         case 'WebcastLinkMicMethod':
-        case 'WebcastLinkmicBattleTaskMessage':
-            return { ...base, type: 'linkMic' as const, action: getInt(f, 3) };
+        case 'WebcastLinkmicBattleTaskMessage': {
+            const action = getStr(f, 1) || `action_${getInt(f, 1)}`;
+            const users: TikTokUser[] = [];
+            const userBufs = getAllBytes(f, 2);
+            for (const ub of userBufs) {
+                try { users.push(parseUser(ub)); } catch { }
+            }
+            return { ...base, type: 'linkMic' as const, action, users };
+        }
 
         default:
             return { ...base, type: 'unknown' as const, method };

@@ -14,6 +14,8 @@ export type {
     RoomUserSeqEvent,
     BattleEvent,
     BattleArmiesEvent,
+    BattleTeam,
+    BattleTeamUser,
     SubscribeEvent,
     EmoteChatEvent,
     EnvelopeEvent,
