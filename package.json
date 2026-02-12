@@ -1,0 +1,67 @@
+{
+    "name": "@tiktool/live",
+    "version": "1.0.0",
+    "description": "TikTok LIVE API Client — Real-time chat, gifts, viewers & events from any TikTok livestream. Direct WebSocket connection.",
+    "author": "tiktool",
+    "license": "MIT",
+    "keywords": [
+        "tiktok",
+        "tiktok-live",
+        "tiktok-api",
+        "tiktok-live-api",
+        "tiktok-live-connector",
+        "live-streaming",
+        "websocket",
+        "chat",
+        "gifts",
+        "tiktok-events",
+        "webcast",
+        "real-time",
+        "protobuf",
+        "tiktok-tools",
+        "live-chat"
+    ],
+    "homepage": "https://tik.tools",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/tiktool/live"
+    },
+    "bugs": {
+        "url": "https://github.com/tiktool/live/issues"
+    },
+    "main": "./dist/index.cjs",
+    "module": "./dist/index.mjs",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "import": {
+                "types": "./dist/index.d.ts",
+                "default": "./dist/index.mjs"
+            },
+            "require": {
+                "types": "./dist/index.d.cts",
+                "default": "./dist/index.cjs"
+            }
+        }
+    },
+    "files": [
+        "dist",
+        "README.md",
+        "LICENSE"
+    ],
+    "scripts": {
+        "build": "tsup",
+        "prepublishOnly": "npm run build"
+    },
+    "dependencies": {
+        "ws": "^8.18.0"
+    },
+    "devDependencies": {
+        "@types/ws": "^8.5.14",
+        "tsup": "^8.3.0",
+        "typescript": "^5.7.0"
+    },
+    "engines": {
+        "node": ">=18"
+    }
+}
