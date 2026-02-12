@@ -40,6 +40,8 @@ export interface GiftEvent extends BaseEvent {
     repeatCount: number;
     repeatEnd: boolean;
     combo: boolean;
+    giftType: number;
+    groupId: string;
 }
 
 export interface SocialEvent extends BaseEvent {
@@ -54,13 +56,29 @@ export interface RoomUserSeqEvent extends BaseEvent {
     totalViewers: number;
 }
 
+export interface BattleTeamUser {
+    user: TikTokUser;
+    score: number;
+}
+
+export interface BattleTeam {
+    hostUserId: string;
+    score: number;
+    users: BattleTeamUser[];
+}
+
 export interface BattleEvent extends BaseEvent {
     type: 'battle';
+    battleId: string;
     status: number;
+    battleDuration: number;
+    teams: BattleTeam[];
 }
 
 export interface BattleArmiesEvent extends BaseEvent {
     type: 'battleArmies';
+    battleId: string;
+    teams: BattleTeam[];
 }
 
 export interface SubscribeEvent extends BaseEvent {
@@ -73,10 +91,12 @@ export interface EmoteChatEvent extends BaseEvent {
     type: 'emoteChat';
     user: TikTokUser;
     emoteId: string;
+    emoteUrl: string;
 }
 
 export interface EnvelopeEvent extends BaseEvent {
     type: 'envelope';
+    envelopeId: string;
     diamondCount: number;
 }
 
@@ -93,22 +113,25 @@ export interface ControlEvent extends BaseEvent {
 
 export interface RoomEvent extends BaseEvent {
     type: 'room';
-    status: string;
+    status: number;
 }
 
 export interface LiveIntroEvent extends BaseEvent {
     type: 'liveIntro';
+    roomId: string;
     title: string;
 }
 
 export interface RankUpdateEvent extends BaseEvent {
     type: 'rankUpdate';
     rankType: string;
+    rankList: Array<{ user: TikTokUser; rank: number; score: number }>;
 }
 
 export interface LinkMicEvent extends BaseEvent {
     type: 'linkMic';
-    action: number;
+    action: string;
+    users: TikTokUser[];
 }
 
 export interface UnknownEvent extends BaseEvent {
