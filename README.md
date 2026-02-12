@@ -2,7 +2,7 @@
 
 # @tiktool/live
 
-### Connect to any TikTok LIVE stream in 3 lines of code.
+### Connect to any TikTok LIVE stream in 4 lines of code.
 
 [![npm version](https://img.shields.io/npm/v/@tiktool/live?color=%23ff0050&label=npm&logo=npm)](https://www.npmjs.com/package/@tiktool/live)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -11,9 +11,7 @@
 
 Real-time chat, gifts, viewers, battles, follows & 18+ event types from any TikTok livestream.
 
-**No API key required** · **Zero config** · **Direct connection**
-
-[Quick Start](#-quick-start) · [Events](#-events) · [API](#-api-reference) · [Rate Limits](#-rate-limits)
+[Quick Start](#-quick-start) · [Events](#-events) · [API](#-api-reference) · [Rate Limits](#-rate-limits) · [Get API Key](https://tik.tools)
 
 </div>
 
@@ -25,10 +23,15 @@ Real-time chat, gifts, viewers, battles, follows & 18+ event types from any TikT
 npm install @tiktool/live
 ```
 
+Get your free API key at [tik.tools](https://tik.tools)
+
 ```typescript
 import { TikTokLive } from '@tiktool/live';
 
-const live = new TikTokLive({ uniqueId: 'tv_asahi_news' });
+const live = new TikTokLive({
+    uniqueId: 'tv_asahi_news',
+    apiKey: 'YOUR_API_KEY',
+});
 
 live.on('chat', e => console.log(`${e.user.uniqueId}: ${e.comment}`));
 live.on('gift', e => console.log(`${e.user.uniqueId} sent ${e.giftName} (${e.diamondCount} diamonds)`));
@@ -37,8 +40,6 @@ live.on('roomUserSeq', e => console.log(`Viewers: ${e.viewerCount}`));
 
 await live.connect();
 ```
-
-No API key, no configuration, no server setup. Install and connect.
 
 ---
 
@@ -58,7 +59,7 @@ No API key, no configuration, no server setup. Install and connect.
 ```
 
 - Your app connects directly to TikTok from your IP address
-- The sign server only generates cryptographic signatures
+- The sign server only generates cryptographic signatures (requires API key)
 - TikTok never sees the sign server
 - Built-in protobuf parser, no external dependencies
 
@@ -120,8 +121,8 @@ live.on('event', (event) => {
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `uniqueId` | `string` | — | TikTok username (without @) |
+| `apiKey` | `string` | — | **Required.** API key from [tik.tools](https://tik.tools) |
 | `signServerUrl` | `string` | `https://api.tik.tools` | Sign server URL |
-| `apiKey` | `string` | — | API key for higher rate limits |
 | `autoReconnect` | `boolean` | `true` | Auto-reconnect on disconnect |
 | `maxReconnectAttempts` | `number` | `5` | Max reconnect attempts |
 | `heartbeatInterval` | `number` | `10000` | Heartbeat interval (ms) |
@@ -141,22 +142,15 @@ live.on('event', (event) => {
 
 ## Rate Limits
 
-| Tier | Rate Limit | API Key | Price |
-|------|-----------|---------|-------|
-| Free | 5 signs/min | No | Free |
-| Basic | 30 signs/min | Yes | Free (with key) |
-| Premium | 120 signs/min | Yes | Coming soon |
+All API requests require an API key. Get yours at [tik.tools](https://tik.tools).
 
-Most users only need the free tier. The SDK calls the sign server once per connection, then stays connected via WebSocket.
+| Tier | Rate Limit | Endpoints | Price |
+|------|-----------|-----------|-------|
+| **Free** | 5/min | `sign_url`, `check_alive` | Free |
+| **Basic** | 30/min | + `fetch`, `room_info`, `bulk_live_check`, WS relay | Free (with key) |
+| **Pro** | 120/min | + `room_video`, all endpoints | Coming soon |
 
-### Using an API Key
-
-```typescript
-const live = new TikTokLive({
-    uniqueId: 'username',
-    apiKey: 'your-api-key',
-});
-```
+The SDK calls the sign server **once per connection**, then stays connected via WebSocket. A free key is sufficient for most use cases.
 
 ---
 
@@ -167,7 +161,10 @@ const live = new TikTokLive({
 ```typescript
 import { TikTokLive } from '@tiktool/live';
 
-const live = new TikTokLive({ uniqueId: 'streamer_name' });
+const live = new TikTokLive({
+    uniqueId: 'streamer_name',
+    apiKey: 'YOUR_API_KEY',
+});
 
 live.on('chat', (e) => {
     if (e.comment.toLowerCase() === '!hello') {
@@ -191,7 +188,10 @@ import { TikTokLive } from '@tiktool/live';
 import { WebSocketServer } from 'ws';
 
 const wss = new WebSocketServer({ port: 8080 });
-const live = new TikTokLive({ uniqueId: 'streamer_name' });
+const live = new TikTokLive({
+    uniqueId: 'streamer_name',
+    apiKey: 'YOUR_API_KEY',
+});
 
 live.on('event', (event) => {
     for (const client of wss.clients) {
@@ -203,25 +203,6 @@ await live.connect();
 console.log('Forwarding events to ws://localhost:8080');
 ```
 
-### Gift Tracker
-
-```typescript
-import { TikTokLive } from '@tiktool/live';
-
-const live = new TikTokLive({ uniqueId: 'streamer_name' });
-let totalDiamonds = 0;
-
-live.on('gift', (e) => {
-    if (e.repeatEnd || !e.combo) {
-        const diamonds = e.diamondCount * (e.repeatCount || 1);
-        totalDiamonds += diamonds;
-        console.log(`${e.user.uniqueId}: ${e.giftName} = ${diamonds} diamonds (Total: ${totalDiamonds})`);
-    }
-});
-
-await live.connect();
-```
-
 ---
 
 ## TypeScript
@@ -231,7 +212,10 @@ Full TypeScript support with type inference:
 ```typescript
 import { TikTokLive, ChatEvent, GiftEvent } from '@tiktool/live';
 
-const live = new TikTokLive({ uniqueId: 'username' });
+const live = new TikTokLive({
+    uniqueId: 'username',
+    apiKey: 'YOUR_API_KEY',
+});
 
 live.on('chat', (event: ChatEvent) => {
     const username: string = event.user.uniqueId;

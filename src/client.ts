@@ -62,7 +62,7 @@ export class TikTokLive extends EventEmitter {
 
     private readonly uniqueId: string;
     private readonly signServerUrl: string;
-    private readonly apiKey?: string;
+    private readonly apiKey: string;
     private readonly autoReconnect: boolean;
     private readonly maxReconnectAttempts: number;
     private readonly heartbeatInterval: number;
@@ -72,6 +72,7 @@ export class TikTokLive extends EventEmitter {
         super();
         this.uniqueId = options.uniqueId.replace(/^@/, '');
         this.signServerUrl = (options.signServerUrl || DEFAULT_SIGN_SERVER).replace(/\/$/, '');
+        if (!options.apiKey) throw new Error('apiKey is required. Get a free key at https://tik.tools');
         this.apiKey = options.apiKey;
         this.autoReconnect = options.autoReconnect ?? true;
         this.maxReconnectAttempts = options.maxReconnectAttempts ?? 5;
@@ -131,15 +132,16 @@ export class TikTokLive extends EventEmitter {
 
         const rawWsUrl = `https://${wsHost}/webcast/im/ws_proxy/ws_reuse_supplement/?${wsParams}`;
 
-        const signUrl = this.apiKey
-            ? `${this.signServerUrl}/webcast/sign_url?apiKey=${this.apiKey}`
-            : `${this.signServerUrl}/webcast/sign_url`;
+        const signUrl = `${this.signServerUrl}/webcast/sign_url`;
 
         let wsUrl: string;
         try {
             const signResp = await fetch(signUrl, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-api-key': this.apiKey,
+                },
                 body: JSON.stringify({ url: rawWsUrl }),
             });
             const signData = await signResp.json() as Record<string, any>;
