@@ -1,0 +1,28 @@
+export { TikTokLive } from './client.js';
+
+export type {
+    TikTokLiveOptions,
+    TikTokLiveEvents,
+    RoomInfo,
+    LiveEvent,
+    BaseEvent,
+    ChatEvent,
+    MemberEvent,
+    LikeEvent,
+    GiftEvent,
+    SocialEvent,
+    RoomUserSeqEvent,
+    BattleEvent,
+    BattleArmiesEvent,
+    SubscribeEvent,
+    EmoteChatEvent,
+    EnvelopeEvent,
+    QuestionEvent,
+    ControlEvent,
+    RoomEvent,
+    LiveIntroEvent,
+    RankUpdateEvent,
+    LinkMicEvent,
+    UnknownEvent,
+    TikTokUser,
+} from './types.js';
