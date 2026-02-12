@@ -132,92 +132,181 @@ export function buildAck(id: bigint): Buffer {
     ]);
 }
 
+// ── User parsing ────────────────────────────────────────────────────
+// Proto: User { userId=1, nickname=3, profilePicture=9, extraAttributes=22, badge=64, uniqueId=38 }
+// Proto: LinkUser { userId=1, nickname=2, profilePicture=3, uniqueId=4 }
+// Proto: ProfilePicture { repeated urls=1 }
+
 function parseUser(data: Buffer): TikTokUser {
     const f = decodeProto(data);
     const id = String(getInt(f, 1) || getStr(f, 1));
-    const nickname = getStr(f, 3) || getStr(f, 5);
-    const uniqueId = getStr(f, 38) || getStr(f, 4) || getStr(f, 2);
+    const nickname = getStr(f, 3) || getStr(f, 2);
+    const uniqueId = getStr(f, 38) || getStr(f, 4) || getStr(f, 2) || '';
 
     let profilePicture: string | undefined;
-    const avatarBuf = getBytes(f, 9);
+    const avatarBuf = getBytes(f, 9) || getBytes(f, 3);
     if (avatarBuf) {
         try {
             const avatarFields = decodeProto(avatarBuf);
-            const urlBuf = getBytes(avatarFields, 1);
-            if (urlBuf) profilePicture = urlBuf.toString('utf-8');
+            // ProfilePicture.urls is repeated string at field 1
+            const urlBufs = getAllBytes(avatarFields, 1);
+            if (urlBufs.length > 0) profilePicture = urlBufs[0].toString('utf-8');
         } catch { }
     }
 
-    return { id, nickname, uniqueId: uniqueId || nickname || id, profilePicture };
+    // Badges from field 64 → field 21 (repeated UserBadge)
+    const badges: string[] = [];
+    const badgeBuf = getBytes(f, 64);
+    if (badgeBuf) {
+        try {
+            const badgeFields = decodeProto(badgeBuf);
+            const badgeItems = getAllBytes(badgeFields, 21);
+            for (const bi of badgeItems) {
+                const bf = decodeProto(bi);
+                const name = getStr(bf, 3) || getStr(bf, 2);
+                if (name) badges.push(name);
+            }
+        } catch { }
+    }
+
+    return {
+        id,
+        nickname,
+        uniqueId: uniqueId || nickname || id,
+        profilePicture,
+        badges: badges.length > 0 ? badges : undefined,
+    };
 }
 
-function parseBattleTeam(teamBuf: Buffer): BattleTeam {
-    const fields = decodeProto(teamBuf);
-    const hostUserId = String(getInt(fields, 1));
-    const score = getInt(fields, 2);
+// ── Battle parsing ──────────────────────────────────────────────────
+// Proto: WebcastLinkMicBattle { repeated battleUsers=10 }
+//   battleUsers → WebcastLinkMicBattleItems { battleGroup=2 }
+//     battleGroup → WebcastLinkMicBattleGroup { LinkUser user=1 }
+//
+// Proto: WebcastLinkMicArmies { repeated battleItems=3, battleStatus=7 }
+//   battleItems → WebcastLinkMicArmiesItems { hostUserId=1, repeated battleGroups=2 }
+//     battleGroups → WebcastLinkMicArmiesGroup { repeated users=1, points=2 }
+
+function parseBattleTeamFromArmies(itemBuf: Buffer): BattleTeam {
+    const f = decodeProto(itemBuf);
+    const hostUserId = String(getInt(f, 1));
+    let teamScore = 0;
     const users: BattleTeamUser[] = [];
 
-    const userFields = getAllBytes(fields, 3);
-    for (const uf of userFields) {
+    // battleGroups at field 2
+    const groups = getAllBytes(f, 2);
+    for (const gb of groups) {
         try {
-            const uFields = decodeProto(uf);
-            const userBuf = getBytes(uFields, 1);
-            const userScore = getInt(uFields, 2);
-            const user = userBuf ? parseUser(userBuf) : { id: '0', nickname: '', uniqueId: '' };
-            users.push({ user, score: userScore });
+            const gf = decodeProto(gb);
+            const points = getInt(gf, 2);
+            teamScore += points;
+
+            // users at field 1 (repeated)
+            const userBufs = getAllBytes(gf, 1);
+            for (const ub of userBufs) {
+                try {
+                    const user = parseUser(ub);
+                    users.push({ user, score: points });
+                } catch { }
+            }
         } catch { }
     }
 
-    return { hostUserId, score, users };
+    return { hostUserId, score: teamScore, users };
 }
+
+// ── Message-specific parsers ────────────────────────────────────────
 
 export function parseWebcastMessage(method: string, payload: Buffer): LiveEvent {
     const f = decodeProto(payload);
-    const base = { timestamp: Date.now(), msgId: String(getInt(f, 1) || '') };
+    const base = { timestamp: Date.now(), msgId: '' };
+
+    // Try to extract msgId from MessageType (field 1 submessage, field 4 = timestamp)
+    const typeBuf = getBytes(f, 1);
+    if (typeBuf) {
+        try {
+            const tf = decodeProto(typeBuf);
+            const ts = getInt(tf, 4);
+            if (ts) base.timestamp = ts;
+        } catch { }
+    }
 
     switch (method) {
+        // Proto: WebcastChatMessage { MessageType type=1, User user=2, string comment=3 }
         case 'WebcastChatMessage': {
             const userBuf = getBytes(f, 2);
             const user = userBuf ? parseUser(userBuf) : { id: '0', nickname: '', uniqueId: '' };
             return { ...base, type: 'chat' as const, user, comment: getStr(f, 3) };
         }
 
+        // Proto: WebcastMemberMessage { User user=2, WebcastMessageEvent event=1 }
         case 'WebcastMemberMessage': {
             const userBuf = getBytes(f, 2);
             const user = userBuf ? parseUser(userBuf) : { id: '0', nickname: '', uniqueId: '' };
-            return { ...base, type: 'member' as const, user, action: getInt(f, 1) };
+            let action = 1;
+            const eventBuf = getBytes(f, 1);
+            if (eventBuf) {
+                const ef = decodeProto(eventBuf);
+                const detailBuf = getBytes(ef, 8);
+                if (detailBuf) {
+                    const df = decodeProto(detailBuf);
+                    const label = getStr(df, 2);
+                    if (label.includes('followed')) action = 2;
+                    else if (label.includes('share')) action = 3;
+                }
+            }
+            return { ...base, type: 'member' as const, user, action };
         }
 
+        // Proto: WebcastLikeMessage { User user=5, WebcastMessageEvent event=1, int32 likeCount=2, int32 totalLikeCount=3 }
         case 'WebcastLikeMessage': {
             const userBuf = getBytes(f, 5);
             const user = userBuf ? parseUser(userBuf) : { id: '0', nickname: '', uniqueId: '' };
-            return { ...base, type: 'like' as const, user, likeCount: getInt(f, 1), totalLikes: getInt(f, 2) || getInt(f, 7) };
+            return {
+                ...base, type: 'like' as const, user,
+                likeCount: getInt(f, 2),
+                totalLikes: getInt(f, 3),
+            };
         }
 
+        // Proto: WebcastGiftMessage {
+        //   User user=7, int32 giftId=2, int32 repeatCount=5, int32 repeatEnd=9,
+        //   GiftDetails giftDetails=15, GiftExtra giftExtra=23
+        // }
+        // GiftDetails { GiftImage giftImage=1, string giftName=16, string describe=2,
+        //               int32 giftType=11, int32 diamondCount=12 }
+        // GiftExtra { uint64 timestamp=6, uint64 toUserId=8 }
         case 'WebcastGiftMessage': {
             const userBuf = getBytes(f, 7);
             const user = userBuf ? parseUser(userBuf) : { id: '0', nickname: '', uniqueId: '' };
-            const giftId = getInt(f, 1);
+            const giftId = getInt(f, 2);
             const repeatCount = getInt(f, 5);
             const repeatEnd = getInt(f, 9) === 1;
-            const giftType = getInt(f, 6);
-            const groupId = getStr(f, 11);
 
-            let giftName = '', diamondCount = 0;
-            const giftInfoBuf = getBytes(f, 15);
-            if (giftInfoBuf) {
-                const gf = decodeProto(giftInfoBuf);
-                giftName = getStr(gf, 1);
-                diamondCount = getInt(gf, 5) || getInt(gf, 2);
-            }
-            if (!giftName) {
-                const giftBuf3 = getBytes(f, 3);
-                if (giftBuf3) {
-                    const gf3 = decodeProto(giftBuf3);
-                    if (!giftName) giftName = getStr(gf3, 2);
-                    if (!diamondCount) diamondCount = getInt(gf3, 5);
+            let giftName = '', diamondCount = 0, giftType = 0;
+            let giftImageUrl = '';
+            const detailsBuf = getBytes(f, 15);
+            if (detailsBuf) {
+                const df = decodeProto(detailsBuf);
+                giftName = getStr(df, 16) || getStr(df, 2);
+                diamondCount = getInt(df, 12);
+                giftType = getInt(df, 11);
+
+                const imgBuf = getBytes(df, 1);
+                if (imgBuf) {
+                    const imgf = decodeProto(imgBuf);
+                    giftImageUrl = getStr(imgf, 1);
                 }
             }
+
+            let toUserId = '';
+            const extraBuf = getBytes(f, 23);
+            if (extraBuf) {
+                const ef = decodeProto(extraBuf);
+                toUserId = String(getInt(ef, 8));
+            }
+
+            const groupId = toUserId || getStr(f, 11);
 
             return {
                 ...base, type: 'gift' as const, user, giftId, giftName, diamondCount,
@@ -226,43 +315,98 @@ export function parseWebcastMessage(method: string, payload: Buffer): LiveEvent 
             };
         }
 
+        // Proto: WebcastSocialMessage { User user=2, WebcastMessageEvent event=1 }
         case 'WebcastSocialMessage': {
             const userBuf = getBytes(f, 2);
             const user = userBuf ? parseUser(userBuf) : { id: '0', nickname: '', uniqueId: '' };
-            const actionInt = getInt(f, 1);
-            const actionMap: Record<number, string> = { 1: 'follow', 2: 'share', 3: 'like' };
-            return { ...base, type: 'social' as const, user, action: actionMap[actionInt] || `action_${actionInt}` };
+            let action = 'follow';
+            const eventBuf = getBytes(f, 1);
+            if (eventBuf) {
+                const ef = decodeProto(eventBuf);
+                const detailBuf = getBytes(ef, 8);
+                if (detailBuf) {
+                    const df = decodeProto(detailBuf);
+                    const label = getStr(df, 2);
+                    if (label.includes('share')) action = 'share';
+                    else if (label.includes('follow')) action = 'follow';
+                    const displayType = getStr(df, 1);
+                    if (displayType === 'pm_mt_msg_viewer_share') action = 'share';
+                }
+            }
+            return { ...base, type: 'social' as const, user, action };
         }
 
-        case 'WebcastRoomUserSeqMessage':
-            return {
-                ...base, type: 'roomUserSeq' as const,
-                totalViewers: getInt(f, 1) || getInt(f, 3),
-                viewerCount: getInt(f, 2) || getInt(f, 4),
-            };
+        // Proto: WebcastRoomUserSeqMessage { int32 viewerCount=3 }
+        case 'WebcastRoomUserSeqMessage': {
+            const viewerCount = getInt(f, 3) || getInt(f, 2);
+            const totalViewers = getInt(f, 1) || viewerCount;
+            return { ...base, type: 'roomUserSeq' as const, totalViewers, viewerCount };
+        }
 
+        // Proto: WebcastLinkMicBattle { repeated WebcastLinkMicBattleItems battleUsers=10 }
+        //   battleUsers → { battleGroup=2 → { LinkUser user=1 } }
         case 'WebcastLinkMicBattle': {
-            const battleId = String(getInt(f, 1) || getStr(f, 1));
-            const status = getInt(f, 2);
+            const battleId = String(getInt(f, 1) || '');
+            const status = getInt(f, 2) || 1;
             const battleDuration = getInt(f, 3);
             const teams: BattleTeam[] = [];
-            const teamBufs = getAllBytes(f, 7);
-            for (const tb of teamBufs) {
-                try { teams.push(parseBattleTeam(tb)); } catch { }
+
+            // battleUsers at field 10
+            const battleUserBufs = getAllBytes(f, 10);
+            for (const bub of battleUserBufs) {
+                try {
+                    const bf = decodeProto(bub);
+                    const groupBuf = getBytes(bf, 2);
+                    if (groupBuf) {
+                        const gf = decodeProto(groupBuf);
+                        const linkUserBuf = getBytes(gf, 1);
+                        if (linkUserBuf) {
+                            const user = parseUser(linkUserBuf);
+                            teams.push({
+                                hostUserId: user.id,
+                                score: 0,
+                                users: [{ user, score: 0 }],
+                            });
+                        }
+                    }
+                } catch { }
             }
+
+            // Also try field 7 as fallback (some message versions)
+            if (teams.length === 0) {
+                const teamBufs7 = getAllBytes(f, 7);
+                for (const tb of teamBufs7) {
+                    try {
+                        teams.push(parseBattleTeamFromArmies(tb));
+                    } catch { }
+                }
+            }
+
             return { ...base, type: 'battle' as const, battleId, status, battleDuration, teams };
         }
 
+        // Proto: WebcastLinkMicArmies { repeated battleItems=3, int32 battleStatus=7 }
+        //   battleItems → { hostUserId=1, repeated battleGroups=2 }
+        //     battleGroups → { repeated users=1, int32 points=2 }
         case 'WebcastLinkMicArmies': {
-            const battleId = String(getInt(f, 1) || getStr(f, 1));
+            const battleId = String(getInt(f, 1) || '');
+            const battleStatus = getInt(f, 7);
             const teams: BattleTeam[] = [];
-            const teamBufs = getAllBytes(f, 3);
-            for (const tb of teamBufs) {
-                try { teams.push(parseBattleTeam(tb)); } catch { }
+
+            const itemBufs = getAllBytes(f, 3);
+            for (const ib of itemBufs) {
+                try {
+                    teams.push(parseBattleTeamFromArmies(ib));
+                } catch { }
             }
-            return { ...base, type: 'battleArmies' as const, battleId, teams };
+
+            return {
+                ...base, type: 'battleArmies' as const, battleId, teams,
+                status: battleStatus,
+            };
         }
 
+        // Proto: WebcastSubNotifyMessage { User user=2, ... subMonth=3 }
         case 'WebcastSubNotifyMessage': {
             const userBuf = getBytes(f, 2);
             const user = userBuf ? parseUser(userBuf) : { id: '0', nickname: '', uniqueId: '' };
@@ -291,10 +435,18 @@ export function parseWebcastMessage(method: string, payload: Buffer): LiveEvent 
             return { ...base, type: 'envelope' as const, envelopeId, diamondCount: getInt(f, 3) };
         }
 
+        // Proto: WebcastQuestionNewMessage { MessageType type=1, QuestionDetails questionDetails=2 }
+        //   QuestionDetails { string questionText=2, User user=5 }
         case 'WebcastQuestionNewMessage': {
-            const userBuf = getBytes(f, 2);
-            const user = userBuf ? parseUser(userBuf) : { id: '0', nickname: '', uniqueId: '' };
-            return { ...base, type: 'question' as const, user, questionText: getStr(f, 3) || getStr(f, 4) };
+            let questionText = '', user: TikTokUser = { id: '0', nickname: '', uniqueId: '' };
+            const detailBuf = getBytes(f, 2);
+            if (detailBuf) {
+                const df = decodeProto(detailBuf);
+                questionText = getStr(df, 2);
+                const userBuf = getBytes(df, 5);
+                if (userBuf) user = parseUser(userBuf);
+            }
+            return { ...base, type: 'question' as const, user, questionText };
         }
 
         case 'WebcastRankUpdateMessage':
@@ -315,6 +467,7 @@ export function parseWebcastMessage(method: string, payload: Buffer): LiveEvent 
             return { ...base, type: 'rankUpdate' as const, rankType, rankList };
         }
 
+        // Proto: WebcastControlMessage { int32 action=2 }
         case 'WebcastControlMessage':
             return { ...base, type: 'control' as const, action: getInt(f, 2) || getInt(f, 1) };
 
@@ -322,9 +475,11 @@ export function parseWebcastMessage(method: string, payload: Buffer): LiveEvent 
         case 'RoomMessage':
             return { ...base, type: 'room' as const, status: getInt(f, 2) };
 
+        // Proto: WebcastLiveIntroMessage { uint64 id=2, string description=4, User user=5 }
         case 'WebcastLiveIntroMessage': {
-            const roomId = String(getInt(f, 1));
-            return { ...base, type: 'liveIntro' as const, roomId, title: getStr(f, 4) || getStr(f, 2) };
+            const roomId = String(getInt(f, 2));
+            const title = getStr(f, 4) || getStr(f, 2);
+            return { ...base, type: 'liveIntro' as const, roomId, title };
         }
 
         case 'WebcastLinkMicMethod':
