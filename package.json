@@ -1,6 +1,6 @@
 {
     "name": "@tiktool/live",
-    "version": "2.6.0",
+    "version": "2.6.1",
     "description": "TikTok LIVE API Client — Real-time chat, gifts, viewers & events from any TikTok livestream. Direct WebSocket connection.",
     "author": "tiktool",
     "license": "MIT",
