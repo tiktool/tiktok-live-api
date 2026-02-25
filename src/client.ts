@@ -2,6 +2,7 @@ import { EventEmitter } from 'events';
 import * as http from 'http';
 import * as https from 'https';
 import * as zlib from 'zlib';
+import { URL } from 'url';
 import WebSocket from 'ws';
 import type { TikTokLiveOptions, TikTokLiveEvents, RoomInfo, LiveEvent } from './types.js';
 import {
@@ -17,14 +18,16 @@ import {
 const DEFAULT_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36';
 const DEFAULT_SIGN_SERVER = 'https://api.tik.tools';
 
-function httpGet(url: string, headers: Record<string, string>): Promise<{
+function httpGet(url: string, headers: Record<string, string>, agent?: http.Agent): Promise<{
     status: number;
     headers: http.IncomingHttpHeaders;
     body: Buffer;
 }> {
     return new Promise((resolve, reject) => {
         const mod = url.startsWith('https') ? https : http;
-        const req = mod.get(url, { headers }, (res) => {
+        const opts: https.RequestOptions = { headers, agent };
+        const parsed = new URL(url);
+        const req = mod.get(parsed, opts, (res) => {
             const chunks: Buffer[] = [];
             const enc = res.headers['content-encoding'];
             const stream = (enc === 'gzip' || enc === 'br')
@@ -59,6 +62,7 @@ export class TikTokLive extends EventEmitter {
     private _connected = false;
     private _eventCount = 0;
     private _roomId = '';
+    private _ownerUserId = '';
 
     private readonly uniqueId: string;
     private readonly signServerUrl: string;
@@ -67,6 +71,11 @@ export class TikTokLive extends EventEmitter {
     private readonly maxReconnectAttempts: number;
     private readonly heartbeatInterval: number;
     private readonly debug: boolean;
+    private _sessionId?: string;
+    private _ttTargetIdc?: string;
+    private readonly proxyAgent?: http.Agent;
+    private readonly _presetRoomId?: string;
+    private readonly _presetTtwid?: string;
 
     constructor(options: TikTokLiveOptions) {
         super();
@@ -78,43 +87,65 @@ export class TikTokLive extends EventEmitter {
         this.maxReconnectAttempts = options.maxReconnectAttempts ?? 5;
         this.heartbeatInterval = options.heartbeatInterval ?? 10_000;
         this.debug = options.debug ?? false;
+        this._sessionId = options.sessionId;
+        this._ttTargetIdc = options.ttTargetIdc;
+        if (options.agent) {
+            this.proxyAgent = options.agent;
+        }
+        this._presetRoomId = options.roomId;
+        this._presetTtwid = options.ttwid;
     }
 
     async connect(): Promise<void> {
         this.intentionalClose = false;
 
-        const resp = await httpGet(`https://www.tiktok.com/@${this.uniqueId}/live`, {
-            'User-Agent': DEFAULT_UA,
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-            'Accept-Encoding': 'gzip, deflate, br',
-            'Accept-Language': 'en-US,en;q=0.9',
-        });
+        let ttwid = this._presetTtwid || '';
+        let roomId = this._presetRoomId || '';
+        let ownerUserId = '';
+        let clusterRegion = '';
 
-        let ttwid = '';
-        for (const sc of [resp.headers['set-cookie'] || []].flat()) {
-            if (typeof sc === 'string' && sc.startsWith('ttwid=')) {
-                ttwid = sc.split(';')[0].split('=').slice(1).join('=');
-                break;
+        // If roomId AND ttwid are preset, skip the HTTP fetch entirely
+        // If roomId is NOT preset, fetch the live page to discover it + get ttwid
+        if (!roomId || !ttwid) {
+            const targetUrl = `https://www.tiktok.com/@${this.uniqueId}/live`;
+            const resp = await httpGet(targetUrl, {
+                'User-Agent': DEFAULT_UA,
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                'Accept-Encoding': 'gzip, deflate, br',
+                'Accept-Language': 'en-US,en;q=0.9',
+            }, this.proxyAgent);
+
+            for (const sc of [resp.headers['set-cookie'] || []].flat()) {
+                if (typeof sc === 'string' && sc.startsWith('ttwid=')) {
+                    ttwid = sc.split(';')[0].split('=').slice(1).join('=');
+                    break;
+                }
             }
-        }
-        if (!ttwid) throw new Error('Failed to obtain session cookie');
+            if (!ttwid) throw new Error('Failed to obtain session cookie');
 
-        const html = resp.body.toString();
-        let roomId = '';
-        const sigiMatch = html.match(/id="SIGI_STATE"[^>]*>([^<]+)/);
-        if (sigiMatch) {
-            try {
-                const json = JSON.parse(sigiMatch[1]);
-                const jsonStr = JSON.stringify(json);
-                const m = jsonStr.match(/"roomId"\s*:\s*"(\d+)"/);
-                if (m) roomId = m[1];
-            } catch { }
+            const html = resp.body.toString();
+            const sigiMatch = html.match(/id="SIGI_STATE"[^>]*>([^<]+)/);
+            if (sigiMatch) {
+                try {
+                    const json = JSON.parse(sigiMatch[1]);
+                    const jsonStr = JSON.stringify(json);
+                    const m = jsonStr.match(/"roomId"\s*:\s*"(\d+)"/);
+                    if (m) roomId = m[1];
+                    const ownerUser = json?.LiveRoom?.liveRoomUserInfo?.user;
+                    if (ownerUser?.id) {
+                        ownerUserId = String(ownerUser.id);
+                    }
+                } catch { }
+            }
+            if (!roomId) throw new Error(`User @${this.uniqueId} is not currently live`);
+            const crMatch = html.match(/"clusterRegion"\s*:\s*"([^"]+)"/);
+            clusterRegion = crMatch ? crMatch[1] : '';
         }
-        if (!roomId) throw new Error(`User @${this.uniqueId} is not currently live`);
+
+        // roomId is now guaranteed — either preset or discovered from HTML
         this._roomId = roomId;
+        this._ownerUserId = ownerUserId;
 
-        const crMatch = html.match(/"clusterRegion"\s*:\s*"([^"]+)"/);
-        const clusterRegion = crMatch ? crMatch[1] : '';
         const wsHost = getWsHost(clusterRegion);
 
         const wsParams = new URLSearchParams({
@@ -156,12 +187,23 @@ export class TikTokLive extends EventEmitter {
         }
 
         return new Promise<void>((resolve, reject) => {
+            // Build cookie header — only include ttwid if we have it
+            let cookieHeader = ttwid ? `ttwid=${ttwid}` : '';
+            if (this._sessionId) {
+                const sessionCookies = `sessionid=${this._sessionId}; sessionid_ss=${this._sessionId}; sid_tt=${this._sessionId}`;
+                cookieHeader = cookieHeader ? `${cookieHeader}; ${sessionCookies}` : sessionCookies;
+                if (this._ttTargetIdc) {
+                    cookieHeader += `; tt-target-idc=${this._ttTargetIdc}`;
+                }
+            }
+
             this.ws = new WebSocket(wsUrl, {
                 headers: {
                     'User-Agent': DEFAULT_UA,
-                    'Cookie': `ttwid=${ttwid}`,
+                    'Cookie': cookieHeader,
                     'Origin': 'https://www.tiktok.com',
                 },
+                agent: this.proxyAgent,
             });
 
             this.ws.on('open', () => {
@@ -177,6 +219,7 @@ export class TikTokLive extends EventEmitter {
                     wsHost,
                     clusterRegion,
                     connectedAt: new Date().toISOString(),
+                    ownerUserId: ownerUserId || undefined,
                 };
 
                 this.emit('connected');
@@ -229,6 +272,32 @@ export class TikTokLive extends EventEmitter {
 
     get roomId(): string {
         return this._roomId;
+    }
+
+    /** Get the stored session ID (if any) */
+    get sessionId(): string | undefined {
+        return this._sessionId;
+    }
+
+    /** Update the session ID at runtime (e.g. after TikTok login) */
+    setSession(sessionId: string, ttTargetIdc?: string): void {
+        this._sessionId = sessionId;
+        if (ttTargetIdc) this._ttTargetIdc = ttTargetIdc;
+    }
+
+    /**
+     * Build a cookie header string for authenticated API requests (e.g. ranklist).
+     * Returns undefined if no session is set.
+     */
+    buildSessionCookieHeader(): string | undefined {
+        if (!this._sessionId) return undefined;
+        const parts = [
+            `sessionid=${this._sessionId}`,
+            `sessionid_ss=${this._sessionId}`,
+            `sid_tt=${this._sessionId}`,
+        ];
+        if (this._ttTargetIdc) parts.push(`tt-target-idc=${this._ttTargetIdc}`);
+        return parts.join('; ');
     }
 
     on<K extends keyof TikTokLiveEvents>(event: K, listener: TikTokLiveEvents[K]): this {

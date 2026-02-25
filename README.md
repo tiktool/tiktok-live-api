@@ -1,5 +1,3 @@
-<div align="center">
-
 # @tiktool/live
 
 ### Connect to any TikTok LIVE stream in 4 lines of code.
@@ -12,8 +10,6 @@
 Real-time chat, gifts, viewers, battles, follows & 18+ event types from any TikTok livestream.
 
 [Quick Start](#-quick-start) · [Events](#-events) · [API](#-api-reference) · [Rate Limits](#-rate-limits) · [Get API Key](https://tik.tools)
-
-</div>
 
 ---
 
@@ -58,7 +54,7 @@ await live.connect();
                               with our server                YOUR IP
 ```
 
-- Your app connects directly to TikTok from your IP address
+- Your app connects directly to TikTok — from your IP or through a proxy
 - The sign server only generates cryptographic signatures (requires API key)
 - TikTok never sees the sign server
 - Built-in protobuf parser, no external dependencies
@@ -123,6 +119,7 @@ live.on('event', (event) => {
 | `uniqueId` | `string` | — | TikTok username (without @) |
 | `apiKey` | `string` | — | **Required.** API key from [tik.tools](https://tik.tools) |
 | `signServerUrl` | `string` | `https://api.tik.tools` | Sign server URL |
+| `agent` | `http.Agent` | — | HTTP agent for proxying connections |
 | `autoReconnect` | `boolean` | `true` | Auto-reconnect on disconnect |
 | `maxReconnectAttempts` | `number` | `5` | Max reconnect attempts |
 | `heartbeatInterval` | `number` | `10000` | Heartbeat interval (ms) |
@@ -144,13 +141,65 @@ live.on('event', (event) => {
 
 All API requests require an API key. Get yours at [tik.tools](https://tik.tools).
 
-| Tier | Rate Limit | Endpoints | Price |
-|------|-----------|-----------|-------|
-| **Free** | 5/min | `sign_url`, `check_alive` | Free |
-| **Basic** | 30/min | + `fetch`, `room_info`, `bulk_live_check`, WS relay | Free (with key) |
-| **Pro** | 120/min | + `room_video`, all endpoints | Coming soon |
+| Tier | Rate Limit | WS Connections | Bulk Check | CAPTCHA/day | Price |
+|------|-----------|----------------|------------|-------------|-------|
+| **Free** | 30/min | 3 | 5 | — | Free |
+| **Pro** | 120/min | 50 | 50 | 50 | Paid |
+| **Ultra** | Unlimited | 10,000 | 500 | 500 | Paid |
 
 The SDK calls the sign server **once per connection**, then stays connected via WebSocket. A free key is sufficient for most use cases.
+
+---
+
+## 🏆 Regional Leaderboard
+
+Get daily, hourly, popular, or league LIVE rankings for any streamer. **Requires Pro or Ultra tier.**
+
+This endpoint uses a **two-step sign-and-return pattern** because TikTok sessions are IP-bound:
+
+1. Call `getRegionalRanklist()` to get a signed URL from the server
+2. POST the signed URL from **your own IP** with your TikTok session cookie
+
+```typescript
+import { getRegionalRanklist } from '@tiktool/live';
+
+// Step 1: Get signed URL from the API
+const signed = await getRegionalRanklist({
+    apiKey: 'YOUR_PRO_KEY',
+    roomId: '7607695933891218198',
+    anchorId: '7444599004337652758',
+    rankType: '8', // Daily
+});
+
+// Step 2: Fetch from YOUR IP with YOUR session cookie
+const resp = await fetch(signed.signed_url, {
+    method: signed.method,
+    headers: { ...signed.headers, Cookie: `sessionid=YOUR_SID; ${signed.cookies}` },
+    body: signed.body,
+});
+
+const { data } = await resp.json();
+data.rank_view.ranks.forEach((r: any, i: number) =>
+    console.log(`${i+1}. ${r.user.nickname} — ${r.score} pts`)
+);
+```
+
+### Rank Types
+
+| Value | Period |
+|-------|--------|
+| `"1"` | Hourly |
+| `"8"` | Daily (default) |
+| `"15"` | Popular LIVE |
+| `"16"` | League |
+
+### Response Shape
+
+The TikTok response contains `data.rank_view` with:
+- **`ranks`** — Array of ranked users with `user.nickname`, `user.display_id`, `score`
+- **`owner_rank`** — The streamer's own position and gap info
+- **`countdown`** — Seconds until the ranking period ends
+- **`cut_off_line`** — Minimum score to appear on the leaderboard
 
 ---
 
@@ -202,6 +251,32 @@ live.on('event', (event) => {
 await live.connect();
 console.log('Forwarding events to ws://localhost:8080');
 ```
+
+---
+
+## 🌐 Proxy Support
+
+Route all connections through an HTTP proxy. Works with any HTTPS proxy provider (residential, datacenter, etc.).
+
+```typescript
+import { TikTokLive } from '@tiktool/live';
+import { HttpsProxyAgent } from 'https-proxy-agent';
+
+const agent = new HttpsProxyAgent('http://user:pass@proxy.example.com:1234');
+
+const live = new TikTokLive({
+    uniqueId: 'streamer_name',
+    apiKey: 'YOUR_API_KEY',
+    agent,
+});
+
+await live.connect(); // Both HTTP and WebSocket go through the proxy
+```
+
+Both the initial page request and the WebSocket connection are routed through the proxy. This is useful for:
+- Running multiple concurrent connections from different IPs
+- Avoiding rate limits
+- Geo-targeting specific regions
 
 ---
 
