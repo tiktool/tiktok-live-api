@@ -1,0 +1,112 @@
+# @tiktool/live
+
+> Connect to any TikTok LIVE stream and receive real-time events (chat, gifts, viewers, battles, follows) using WebSocket.
+
+## Quick Start
+
+```typescript
+import { TikTokLive } from '@tiktool/live';
+
+const live = new TikTokLive({
+    uniqueId: 'username',     // TikTok username (without @)
+    apiKey: 'YOUR_API_KEY',   // Get free key at https://tik.tools
+});
+
+live.on('chat', e => console.log(`${e.user.uniqueId}: ${e.comment}`));
+live.on('gift', e => console.log(`${e.user.uniqueId} sent ${e.giftName}`));
+live.on('member', e => console.log(`${e.user.uniqueId} joined`));
+live.on('roomUserSeq', e => console.log(`Viewers: ${e.viewerCount}`));
+
+await live.connect();
+```
+
+## Install
+
+```bash
+npm install @tiktool/live
+```
+
+## How It Works
+
+1. Your app calls `api.tik.tools` once to sign the connection URL (requires API key)
+2. Your app connects directly to TikTok's WebSocket from YOUR IP
+3. Live events (chat, gifts, etc.) stream directly to your app via protobuf
+4. The sign server never sees your data — only generates cryptographic signatures
+
+## Constructor Options
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `uniqueId` | `string` | — | TikTok username (without @) |
+| `apiKey` | `string` | — | Required. API key from tik.tools |
+| `signServerUrl` | `string` | `https://api.tik.tools` | Sign server URL |
+| `agent` | `http.Agent` | — | HTTP agent for proxy support |
+| `autoReconnect` | `boolean` | `true` | Auto-reconnect on disconnect |
+| `maxReconnectAttempts` | `number` | `5` | Max reconnect attempts |
+| `heartbeatInterval` | `number` | `10000` | Heartbeat interval (ms) |
+| `debug` | `boolean` | `false` | Debug logging |
+
+## Events
+
+### Live Events
+- `chat` — Chat message: `{ user, comment }`
+- `member` — User joined: `{ user, action }`
+- `like` — User liked: `{ user, likeCount, totalLikes }`
+- `gift` — Gift sent: `{ user, giftName, diamondCount, repeatCount, combo, repeatEnd }`
+- `social` — Follow/share: `{ user, action }`
+- `roomUserSeq` — Viewer count: `{ viewerCount, totalViewers }`
+- `battle` — Battle status: `{ status }`
+- `battleArmies` — Battle teams with scores
+- `subscribe` — New subscriber: `{ user, subMonth }`
+- `emoteChat` — Emote in chat: `{ user, emoteId }`
+- `envelope` — Treasure chest: `{ diamondCount }`
+- `question` — Q&A question: `{ user, questionText }`
+- `control` — Stream control: `{ action }` (3 = stream ended)
+- `room` — Room status change
+- `liveIntro` — Stream intro: `{ title }`
+- `rankUpdate` — Rank update
+- `linkMic` — Link Mic event
+- `unknown` — Unrecognized event type
+
+### Connection Events
+- `connected` — Connected to stream
+- `disconnected` — Disconnected (code, reason)
+- `roomInfo` — Room info received
+- `error` — Error occurred
+
+## Methods
+
+- `connect()` → `Promise<void>` — Connect to livestream
+- `disconnect()` → `void` — Disconnect
+- `connected` → `boolean` — Connection status (getter)
+- `eventCount` → `number` — Total events received (getter)
+- `roomId` → `string` — Current room ID (getter)
+
+## Proxy Support
+
+```typescript
+import { HttpsProxyAgent } from 'https-proxy-agent';
+
+const live = new TikTokLive({
+    uniqueId: 'username',
+    apiKey: 'YOUR_API_KEY',
+    agent: new HttpsProxyAgent('http://user:pass@proxy:1234'),
+});
+```
+
+## Rate Limits
+
+| Tier | Rate Limit | WS Connections | Price |
+|------|-----------|----------------|-------|
+| Free | 30/min | 3 | Free |
+| Pro | 120/min | 50 | Paid |
+| Ultra | Unlimited | 10,000 | Paid |
+
+Get your API key at https://tik.tools
+
+## Links
+
+- Homepage: https://tik.tools
+- Docs: https://tik.tools/docs
+- npm: https://www.npmjs.com/package/@tiktool/live
+- GitHub: https://github.com/tiktool/live

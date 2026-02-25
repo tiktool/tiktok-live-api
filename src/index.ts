@@ -1,4 +1,6 @@
 export { TikTokLive } from './client.js';
+export { getRanklist, getRegionalRanklist } from './api.js';
+export type { GetRanklistOptions, GetRegionalRanklistOptions, RegionalRanklistSignedResponse } from './api.js';
 
 export type {
     TikTokLiveOptions,
@@ -16,6 +18,8 @@ export type {
     BattleArmiesEvent,
     BattleTeam,
     BattleTeamUser,
+    BattleTaskEvent,
+    BarrageEvent,
     SubscribeEvent,
     EmoteChatEvent,
     EnvelopeEvent,
@@ -27,4 +31,14 @@ export type {
     LinkMicEvent,
     UnknownEvent,
     TikTokUser,
+    RanklistUser,
+    OnlineAudienceEntry,
+    AnchorRankListEntry,
+    RanklistSelfInfo,
+    OnlineAudienceResponse,
+    AnchorRankListResponse,
+    EntranceTab,
+    EntranceInfo,
+    EntranceResponse,
+    RanklistResponse,
 } from './types.js';
