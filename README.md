@@ -9,7 +9,9 @@
 
 Real-time chat, gifts, viewers, battles, follows & 18+ event types from any TikTok livestream.
 
-[Quick Start](#-quick-start) · [Events](#-events) · [API](#-api-reference) · [Rate Limits](#-rate-limits) · [Get API Key](https://tik.tools)
+**NEW:** 🎤 [Real-Time Live Captions](#-real-time-live-captions) — AI-powered speech-to-text transcription & translation with speaker diarization and sub-second latency.
+
+[Quick Start](#-quick-start) · [Events](#-events) · [Live Captions](#-real-time-live-captions) · [API](#-api-reference) · [Rate Limits](#-rate-limits) · [Get API Key](https://tik.tools)
 
 ---
 
@@ -44,7 +46,7 @@ await live.connect();
 ```
     Your App                    tik.tools                    TikTok
   +-----------+              +--------------+           +--------------+
-  |          -+-- sign_url -->  Signs URL   |           |              |
+  |          -+-- sign_url --> Signs URL    |           |              |
   |  Your   <-+-- X-Bogus --|  with params |           |   TikTok     |
   |  Code    |              |              |           |   WebSocket  |
   |          -+------------ Connect directly ---------->|   Server     |
@@ -110,6 +112,119 @@ live.on('event', (event) => {
 
 ---
 
+## 🎤 Real-Time Live Captions
+
+AI-powered speech-to-text transcription and translation for TikTok LIVE streams. Features include:
+
+- **Auto-detect language** — Automatically identifies the spoken language
+- **Speaker diarization** — Identifies individual speakers in multi-person streams
+- **Real-time translation** — Translate to any supported language with sub-second latency
+- **Partial + final results** — Get streaming partial transcripts and confirmed final text
+- **Credit-based billing** — 1 credit = 1 minute of transcription/translation
+
+### Quick Start
+
+```typescript
+import { TikTokCaptions } from '@tiktool/live';
+
+const captions = new TikTokCaptions({
+    uniqueId: 'streamer_name',
+    apiKey: 'YOUR_API_KEY',
+    translate: 'en',
+    diarization: true,
+});
+
+captions.on('caption', (event) => {
+    const prefix = event.speaker ? `[${event.speaker}] ` : '';
+    console.log(`${prefix}${event.text}${event.isFinal ? ' ✓' : '...'}`);
+});
+
+captions.on('translation', (event) => {
+    console.log(`  → ${event.text}`);
+});
+
+captions.on('credits', (event) => {
+    console.log(`${event.remaining}/${event.total} min remaining`);
+});
+
+captions.on('credits_low', (event) => {
+    console.warn(`Low credits! ${event.remaining} min left`);
+});
+
+await captions.start();
+```
+
+### `new TikTokCaptions(options)`
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `uniqueId` | `string` | — | TikTok username (without @) |
+| `apiKey` | `string` | — | **Required.** API key from [tik.tools](https://tik.tools) |
+| `language` | `string` | `''` | Source language hint (empty = auto-detect) |
+| `translate` | `string` | `''` | Target translation language (e.g. `'en'`, `'es'`, `'fr'`) |
+| `diarization` | `boolean` | `true` | Enable speaker identification |
+| `maxDurationMinutes` | `number` | `60` | Auto-disconnect after N minutes (max: 300) |
+| `autoReconnect` | `boolean` | `true` | Auto-reconnect on disconnect |
+| `maxReconnectAttempts` | `number` | `5` | Max reconnect attempts |
+| `debug` | `boolean` | `false` | Debug logging |
+
+### Caption Events
+
+| Event | Callback | Description |
+|-------|----------|-------------|
+| `caption` | `(data: CaptionData) => void` | Real-time transcription (partial + final) |
+| `translation` | `(data: TranslationData) => void` | Translated text |
+| `status` | `(data: CaptionStatus) => void` | Session status changes |
+| `credits` | `(data: CaptionCredits) => void` | Credit balance updates |
+| `credits_low` | `(data) => void` | Low credit warning (≤20%) |
+| `connected` | `() => void` | WebSocket connected |
+| `disconnected` | `(code, reason) => void` | Disconnected |
+| `error` | `(data: CaptionError) => void` | Error |
+
+### Methods
+
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `start()` | `Promise<void>` | Connect and start transcription |
+| `stop()` | `void` | Stop and disconnect |
+| `setLanguage(lang)` | `void` | Switch translation language on-the-fly |
+| `getCredits()` | `void` | Request credit balance update |
+| `connected` | `boolean` | Connection status |
+| `language` | `string` | Current target language |
+
+### Raw WebSocket
+
+You can also connect directly via WebSocket without the SDK:
+
+```
+wss://api.tik.tools/captions?uniqueId=USERNAME&apiKey=YOUR_KEY&translate=en&diarization=true&max_duration_minutes=120
+```
+
+### Caption Credits
+
+Every API key includes a **60-minute free trial** for live captions (speech-to-text with auto-detect to any language).
+
+| Tier | Included Credits | Additional Top-Ups |
+|------|-----------------|-------------------|
+| **Free** | 60 min free trial | — |
+| **Pro** | 2,000 min/month | Available |
+| **Ultra** | 10,000 min/month | Available |
+
+**Top-Up Packages:**
+
+| Package | Credits | Price | Per Credit |
+|---------|---------|-------|------------|
+| Starter | 150 min | $4.99 | $0.033/min |
+| Growth | 600 min | $14.99 | $0.025/min |
+| Scale | 2,000 min | $39.99 | $0.020/min |
+| Whale | 10,000 min | $149.99 | $0.015/min |
+
+> **1 credit = 1 minute** of audio transcribed/translated into one language.
+
+Try the live demo at [tik.tools/captions](https://tik.tools/captions) — see real-time transcription and translation on actual TikTok LIVE streams.
+
+---
+
 ## API Reference
 
 ### `new TikTokLive(options)`
@@ -141,11 +256,11 @@ live.on('event', (event) => {
 
 All API requests require an API key. Get yours at [tik.tools](https://tik.tools).
 
-| Tier | Rate Limit | WS Connections | Bulk Check | CAPTCHA/day | Price |
-|------|-----------|----------------|------------|-------------|-------|
-| **Free** | 30/min | 3 | 5 | — | Free |
-| **Pro** | 120/min | 50 | 50 | 50 | Paid |
-| **Ultra** | Unlimited | 10,000 | 500 | 500 | Paid |
+| Tier | Rate Limit | WS Connections | Bulk Check | Caption Credits | Price |
+|------|-----------|----------------|------------|-----------------|-------|
+| **Free** | 30/min | 3 | 5 | 60 min trial | Free |
+| **Pro** | 120/min | 50 | 50 | 2,000/month | Paid |
+| **Ultra** | Unlimited | 10,000 | 500 | 10,000/month | Paid |
 
 The SDK calls the sign server **once per connection**, then stays connected via WebSocket. A free key is sufficient for most use cases.
 
@@ -163,15 +278,13 @@ This endpoint uses a **two-step sign-and-return pattern** because TikTok session
 ```typescript
 import { getRegionalRanklist } from '@tiktool/live';
 
-// Step 1: Get signed URL from the API
 const signed = await getRegionalRanklist({
     apiKey: 'YOUR_PRO_KEY',
     roomId: '7607695933891218198',
     anchorId: '7444599004337652758',
-    rankType: '8', // Daily
+    rankType: '8',
 });
 
-// Step 2: Fetch from YOUR IP with YOUR session cookie
 const resp = await fetch(signed.signed_url, {
     method: signed.method,
     headers: { ...signed.headers, Cookie: `sessionid=YOUR_SID; ${signed.cookies}` },
@@ -192,14 +305,6 @@ data.rank_view.ranks.forEach((r: any, i: number) =>
 | `"8"` | Daily (default) |
 | `"15"` | Popular LIVE |
 | `"16"` | League |
-
-### Response Shape
-
-The TikTok response contains `data.rank_view` with:
-- **`ranks`** — Array of ranked users with `user.nickname`, `user.display_id`, `score`
-- **`owner_rank`** — The streamer's own position and gap info
-- **`countdown`** — Seconds until the ranking period ends
-- **`cut_off_line`** — Minimum score to appear on the leaderboard
 
 ---
 
@@ -270,7 +375,7 @@ const live = new TikTokLive({
     agent,
 });
 
-await live.connect(); // Both HTTP and WebSocket go through the proxy
+await live.connect();
 ```
 
 Both the initial page request and the WebSocket connection are routed through the proxy. This is useful for:

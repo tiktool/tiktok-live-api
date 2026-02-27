@@ -312,8 +312,17 @@ function parseBattleTeamFromArmies(itemBuf: Uint8Array): BattleTeam {
             const userBufs = getAllBytes(gf, 1);
             for (const ub of userBufs) {
                 try {
+                    // TikTok's LinkMicArmies user entry is a flat proto:
+                    //   f1(varint) = userId
+                    //   f2(varint) = individual score (diamonds gifted by this user)
+                    //   f3(bytes)  = nickname
+                    //   f4(bytes)  = avatar/profile data
+                    //   f6(bytes)  = badge data
+                    // The individual score is f2 varint — same buffer, no wrapper.
+                    const userFields = decodeProto(ub);
+                    const individualScore = getInt(userFields, 2);
                     const user = parseUser(ub);
-                    users.push({ user, score: points });
+                    users.push({ user, score: individualScore });
                 } catch { }
             }
         } catch { }
