@@ -1,6 +1,16 @@
 export { TikTokLive } from './client.js';
+export { TikTokCaptions } from './captions.js';
 export { getRanklist, getRegionalRanklist } from './api.js';
 export type { GetRanklistOptions, GetRegionalRanklistOptions, RegionalRanklistSignedResponse } from './api.js';
+export type {
+    TikTokCaptionsOptions,
+    TikTokCaptionsEvents,
+    CaptionData,
+    TranslationData,
+    CaptionCredits,
+    CaptionStatus,
+    CaptionError,
+} from './captions.js';
 
 export type {
     TikTokLiveOptions,

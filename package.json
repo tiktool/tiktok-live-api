@@ -1,7 +1,7 @@
 {
     "name": "@tiktool/live",
-    "version": "2.6.1",
-    "description": "TikTok LIVE API Client — Real-time chat, gifts, viewers & events from any TikTok livestream. Direct WebSocket connection.",
+    "version": "2.6.2",
+    "description": "TikTok LIVE API Client — Real-time chat, gifts, viewers, live captions (speech-to-text), AI transcription & translation from any TikTok livestream.",
     "author": "tiktool",
     "license": "MIT",
     "keywords": [
@@ -19,7 +19,17 @@
         "real-time",
         "protobuf",
         "tiktok-tools",
-        "live-chat"
+        "live-chat",
+        "speech-to-text",
+        "stt",
+        "captions",
+        "transcription",
+        "translation",
+        "ai-captions",
+        "tiktok-captions",
+        "diarization",
+        "live-captions",
+        "tiktok-transcription"
     ],
     "homepage": "https://tik.tools",
     "repository": {
