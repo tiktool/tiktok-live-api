@@ -1,7 +1,7 @@
 export { TikTokLive } from './client.js';
 export { TikTokCaptions } from './captions.js';
-export { getRanklist, getRegionalRanklist } from './api.js';
-export type { GetRanklistOptions, GetRegionalRanklistOptions, RegionalRanklistSignedResponse } from './api.js';
+export { getRanklist, getRegionalRanklist, getLiveFeed, fetchFeed } from './api.js';
+export type { GetRanklistOptions, GetRegionalRanklistOptions, RegionalRanklistSignedResponse, GetLiveFeedOptions } from './api.js';
 export type {
     TikTokCaptionsOptions,
     TikTokCaptionsEvents,
@@ -51,4 +51,7 @@ export type {
     EntranceInfo,
     EntranceResponse,
     RanklistResponse,
+    FeedRoomOwner,
+    FeedRoom,
+    FeedSignedResponse,
 } from './types.js';
