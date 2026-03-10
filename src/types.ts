@@ -457,3 +457,63 @@ export interface ShapesSolveResult {
     /** Time taken to solve in milliseconds */
     solve_time_ms: number;
 }
+
+// ── Feed Discovery Types ────────────────────────────────────────────
+
+/** Streamer info in a feed room entry */
+export interface FeedRoomOwner {
+    /** TikTok user ID */
+    id_str: string;
+    /** Username (@handle) */
+    display_id: string;
+    /** Display name */
+    nickname: string;
+    /** Avatar thumbnail URLs */
+    avatar_thumb?: { url_list: string[] };
+    /** Avatar large URLs */
+    avatar_large?: { url_list: string[] };
+}
+
+/** A single live room entry from the feed */
+export interface FeedRoom {
+    /** Room ID */
+    id_str: string;
+    /** Stream title */
+    title: string;
+    /** Current viewer count */
+    user_count: number;
+    /** Stream cover image URL */
+    cover?: { url_list: string[] };
+    /** Streamer info */
+    owner: FeedRoomOwner;
+    /** Stream status (2 = live) */
+    status: number;
+    /** Stream start time (unix seconds) */
+    create_time?: number;
+    /** Like count */
+    like_count?: number;
+    /** Hashtag IDs */
+    hashtag_ids?: string[];
+}
+
+/** Signed-URL response from GET/POST /webcast/feed */
+export interface FeedSignedResponse {
+    /** Always 0 on success */
+    status_code: number;
+    /** The signed TikTok URL to fetch */
+    signed_url: string;
+    /** Required headers */
+    headers: Record<string, string>;
+    /** Cookies to include (ttwid, sessionid, etc.) */
+    cookies?: string;
+    /** Region used */
+    region: string;
+    /** Channel ID used */
+    channel_id: string;
+    /** Remaining daily feed calls */
+    feed_remaining: number;
+    /** Daily feed call limit */
+    feed_limit: number;
+    /** Human-readable instructions */
+    note: string;
+}

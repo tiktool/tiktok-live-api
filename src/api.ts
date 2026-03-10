@@ -546,3 +546,125 @@ export async function getRegionalRanklist(opts: GetRegionalRanklistOptions): Pro
 
     return data as RegionalRanklistSignedResponse;
 }
+
+// ── Feed Discovery API ──────────────────────────────────────────────
+
+import type { FeedSignedResponse, FeedRoom } from './types.js';
+
+export interface GetLiveFeedOptions {
+    /** API server URL (default: https://api.tik.tools) */
+    serverUrl?: string;
+    /** API key for authentication (Pro or Ultra tier required) */
+    apiKey: string;
+    /** Region code (default: 'US') */
+    region?: string;
+    /**
+     * Feed channel:
+     * - '87' = Recommended (default)
+     * - '86' = Suggested
+     * - '42' = Following
+     * - '1111006' = Gaming
+     */
+    channelId?: string;
+    /** Number of rooms to return (max 50, default 20) */
+    count?: number;
+    /** Pagination cursor from previous response (default: '0') */
+    maxTime?: string;
+    /** TikTok sessionid cookie — required for populated results */
+    sessionId?: string;
+    /** TikTok ttwid cookie */
+    ttwid?: string;
+    /** TikTok msToken cookie */
+    msToken?: string;
+}
+
+/**
+ * Get a signed URL for fetching the TikTok LIVE feed.
+ *
+ * **Two-step pattern**: Returns a signed URL with headers and cookies.
+ * Fetch the signed URL from your own IP to get the feed data.
+ *
+ * Requires **Pro** or **Ultra** API key tier.
+ *
+ * @example
+ * ```ts
+ * // Step 1: Get signed URL
+ * const signed = await getLiveFeed({
+ *     apiKey: 'your-pro-key',
+ *     sessionId: 'your-tiktok-sessionid',
+ *     region: 'US',
+ *     count: 10,
+ * });
+ *
+ * // Step 2: Fetch from YOUR IP
+ * const resp = await fetch(signed.signed_url, {
+ *     headers: { ...signed.headers, Cookie: signed.cookies || '' },
+ * });
+ * const data = await resp.json();
+ * console.log(`Found ${data.data?.length || 0} live rooms`);
+ *
+ * // Step 3: Load more (pagination)
+ * const nextSigned = await getLiveFeed({
+ *     apiKey: 'your-pro-key',
+ *     sessionId: 'your-tiktok-sessionid',
+ *     maxTime: data.extra?.max_time || '0',
+ * });
+ * ```
+ */
+export async function getLiveFeed(opts: GetLiveFeedOptions): Promise<FeedSignedResponse> {
+    const base = (opts.serverUrl || DEFAULT_SIGN_SERVER).replace(/\/$/, '');
+    const params = new URLSearchParams();
+    params.set('apiKey', opts.apiKey);
+    if (opts.region) params.set('region', opts.region);
+    if (opts.channelId) params.set('channel_id', opts.channelId);
+    if (opts.count !== undefined) params.set('count', String(Math.min(opts.count, 50)));
+    if (opts.maxTime) params.set('max_time', opts.maxTime);
+    if (opts.sessionId) params.set('session_id', opts.sessionId);
+    if (opts.ttwid) params.set('ttwid', opts.ttwid);
+    if (opts.msToken) params.set('ms_token', opts.msToken);
+
+    const resp = await fetch(`${base}/webcast/feed?${params.toString()}`);
+    const data = await resp.json() as any;
+
+    if (resp.status === 429) {
+        throw new Error(data.error || 'Feed daily limit reached. Upgrade your plan for more calls.');
+    }
+    if (!resp.ok) {
+        throw new Error(data.error || `Feed request failed (HTTP ${resp.status})`);
+    }
+
+    return data as FeedSignedResponse;
+}
+
+/**
+ * Convenience: Get the feed AND fetch the signed URL in one step.
+ * Returns the parsed JSON feed data from TikTok.
+ *
+ * @example
+ * ```ts
+ * const feed = await fetchFeed({
+ *     apiKey: 'your-pro-key',
+ *     sessionId: 'your-tiktok-sessionid',
+ *     region: 'GR',
+ *     count: 10,
+ * });
+ * for (const entry of feed.data || []) {
+ *     const room = entry.data;
+ *     console.log(`🔴 @${room.owner.display_id}: "${room.title}" — ${room.user_count} viewers`);
+ * }
+ * ```
+ */
+export async function fetchFeed(opts: GetLiveFeedOptions): Promise<any> {
+    const signed = await getLiveFeed(opts);
+    const headers: Record<string, string> = { ...(signed.headers || {}) };
+    if (signed.cookies) {
+        headers['Cookie'] = signed.cookies;
+    }
+    const resp = await fetch(signed.signed_url, { headers, redirect: 'follow' });
+    const text = await resp.text();
+    try {
+        return JSON.parse(text);
+    } catch {
+        return null;
+    }
+}

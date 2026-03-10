@@ -1,6 +1,6 @@
 {
     "name": "@tiktool/live",
-    "version": "2.6.2",
+    "version": "2.6.4",
     "description": "TikTok LIVE API Client — Real-time chat, gifts, viewers, live captions (speech-to-text), AI transcription & translation from any TikTok livestream.",
     "author": "tiktool",
     "license": "MIT",

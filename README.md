@@ -239,6 +239,10 @@ Try the live demo at [tik.tools/captions](https://tik.tools/captions) — see re
 | `maxReconnectAttempts` | `number` | `5` | Max reconnect attempts |
 | `heartbeatInterval` | `number` | `10000` | Heartbeat interval (ms) |
 | `debug` | `boolean` | `false` | Debug logging |
+| `sessionId` | `string` | — | TikTok `sessionid` cookie for authenticated features (ranklist, chat) |
+| `ttTargetIdc` | `string` | — | TikTok target IDC region (e.g. `useast5`). Required with `sessionId` |
+| `roomId` | `string` | — | Pre-known room ID — skips HTML page scrape |
+| `ttwid` | `string` | — | Pre-fetched `ttwid` cookie. With `roomId`, skips all HTTP requests |
 
 ### Methods
 
@@ -246,9 +250,12 @@ Try the live demo at [tik.tools/captions](https://tik.tools/captions) — see re
 |--------|---------|-------------|
 | `connect()` | `Promise<void>` | Connect to livestream |
 | `disconnect()` | `void` | Disconnect |
+| `setSession(sessionId, ttTargetIdc?)` | `void` | Update session at runtime |
+| `buildSessionCookieHeader()` | `string \| undefined` | Build cookie header for auth API requests |
 | `connected` | `boolean` | Connection status |
 | `eventCount` | `number` | Total events received |
 | `roomId` | `string` | Current room ID |
+| `sessionId` | `string \| undefined` | Current session ID |
 
 ---
 
@@ -256,13 +263,69 @@ Try the live demo at [tik.tools/captions](https://tik.tools/captions) — see re
 
 All API requests require an API key. Get yours at [tik.tools](https://tik.tools).
 
-| Tier | Rate Limit | WS Connections | Bulk Check | Caption Credits | Price |
-|------|-----------|----------------|------------|-----------------|-------|
-| **Free** | 30/min | 3 | 5 | 60 min trial | Free |
-| **Pro** | 120/min | 50 | 50 | 2,000/month | Paid |
-| **Ultra** | Unlimited | 10,000 | 500 | 10,000/month | Paid |
+| Tier | Rate Limit | WS Connections | Bulk Check | Feed Discovery | Caption Credits | Price |
+|------|-----------|----------------|------------|----------------|-----------------|-------|
+| **Free** | 30/min | 3 | 5 | ✕ | 60 min trial | Free |
+| **Pro** | 120/min | 50 | 50 | 100/day | 2,000/month | Paid |
+| **Ultra** | Unlimited | 10,000 | 500 | 2,000/day | 10,000/month | Paid |
 
 The SDK calls the sign server **once per connection**, then stays connected via WebSocket. A free key is sufficient for most use cases.
+
+---
+
+## 🔍 Feed Discovery
+
+Discover recommended TikTok LIVE streams. **Requires Pro or Ultra tier.**
+
+```typescript
+import { getLiveFeed, fetchFeed } from '@tiktool/live';
+
+// Option 1: Two-step (sign-and-return)
+const signed = await getLiveFeed({
+    apiKey: 'YOUR_PRO_KEY',
+    sessionId: 'YOUR_TIKTOK_SESSIONID',
+    region: 'US',
+    count: 10,
+});
+
+const resp = await fetch(signed.signed_url, {
+    headers: { ...signed.headers, Cookie: signed.cookies || '' },
+});
+const data = await resp.json();
+
+// Option 2: One-step convenience
+const feed = await fetchFeed({
+    apiKey: 'YOUR_PRO_KEY',
+    sessionId: 'YOUR_TIKTOK_SESSIONID',
+    count: 10,
+});
+
+for (const entry of feed.data || []) {
+    const room = entry.data;
+    console.log(`🔴 @${room.owner.display_id}: "${room.title}" — ${room.user_count} viewers`);
+}
+```
+
+### Channel Types
+
+| Value | Channel |
+|-------|--------|
+| `"87"` | Recommended (default) |
+| `"86"` | Suggested |
+| `"42"` | Following |
+| `"1111006"` | Gaming |
+
+### Pagination
+
+Use `maxTime` from the previous response to load more:
+
+```typescript
+const page2 = await getLiveFeed({
+    apiKey: 'YOUR_PRO_KEY',
+    sessionId: 'YOUR_TIKTOK_SESSIONID',
+    maxTime: data.extra?.max_time, // cursor from previous response
+});
+```
 
 ---
 
