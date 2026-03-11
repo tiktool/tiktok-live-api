@@ -202,24 +202,15 @@ wss://api.tik.tools/captions?uniqueId=USERNAME&apiKey=YOUR_KEY&translate=en&diar
 
 ### Caption Credits
 
-Every API key includes a **60-minute free trial** for live captions (speech-to-text with auto-detect to any language).
-
-| Tier | Included Credits | Additional Top-Ups |
-|------|-----------------|-------------------|
-| **Free** | 60 min free trial | — |
-| **Pro** | 2,000 min/month | Available |
-| **Ultra** | 10,000 min/month | Available |
-
-**Top-Up Packages:**
+Caption credits are **pay-as-you-go add-ons** — no credits are included in the base subscription. Requires Basic tier or higher.
 
 | Package | Credits | Price | Per Credit |
 |---------|---------|-------|------------|
-| Starter | 150 min | $4.99 | $0.033/min |
-| Growth | 600 min | $14.99 | $0.025/min |
-| Scale | 2,000 min | $39.99 | $0.020/min |
-| Whale | 10,000 min | $149.99 | $0.015/min |
+| **Starter** | 1,000 min | $10 | $0.010/min |
+| **Creator** | 5,000 min | $35 | $0.007/min |
+| **Agency** | 20,000 min | $100 | $0.005/min |
 
-> **1 credit = 1 minute** of audio transcribed/translated into one language.
+> **1 credit = 1 minute** of audio transcribed/translated into one language. If translating to 2 languages simultaneously, it burns 2 credits per minute.
 
 Try the live demo at [tik.tools/captions](https://tik.tools/captions) — see real-time transcription and translation on actual TikTok LIVE streams.
 
@@ -263,13 +254,19 @@ Try the live demo at [tik.tools/captions](https://tik.tools/captions) — see re
 
 All API requests require an API key. Get yours at [tik.tools](https://tik.tools).
 
-| Tier | Rate Limit | WS Connections | Bulk Check | Feed Discovery | Caption Credits | Price |
-|------|-----------|----------------|------------|----------------|-----------------|-------|
-| **Free** | 30/min | 3 | 5 | ✕ | 60 min trial | Free |
-| **Pro** | 120/min | 50 | 50 | 100/day | 2,000/month | Paid |
-| **Ultra** | Unlimited | 10,000 | 500 | 2,000/day | 10,000/month | Paid |
+| Tier | Requests/Day | Rate Limit | WS Connections | WS Duration | WS Connects | Bulk Check | CAPTCHA | Feed Discovery | Price |
+|------|-------------|-----------|----------------|-------------|-------------|------------|---------|----------------|-------|
+| **Sandbox** | 50 | 5/min | 1 | 60 sec | 10/hr · 30/day | 1 | ✕ | ✕ | Free |
+| **Basic** | 10,000 | 60/min | 3 | 8 hours | 60/hr · 200/day | 10 | ✕ | ✕ | From $7/wk |
+| **Pro** | 75,000 | Unlimited | 50 | 8 hours | Unlimited | 50 | 50/day | 100/day | From $15/wk |
+| **Ultra** | 300,000 | Unlimited | 500 | 8 hours | Unlimited | 500 | 500/day | 2,000/day | From $45/wk |
 
-The SDK calls the sign server **once per connection**, then stays connected via WebSocket. A free key is sufficient for most use cases.
+**Caption Credits** are available as pay-as-you-go add-ons (1 credit = 1 min of audio in 1 language):
+- **Starter**: 1,000 credits — $10
+- **Creator**: 5,000 credits — $35
+- **Agency**: 20,000 credits — $100
+
+The SDK calls the sign server **once per connection**, then stays connected via WebSocket. Sandbox is for API verification only — use Basic or higher for production.
 
 ---
 
