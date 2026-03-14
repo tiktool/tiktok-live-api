@@ -1,17 +1,18 @@
-# @tiktool/live
+# TikTok LIVE API — Node.js & TypeScript
 
-### Connect to any TikTok LIVE stream in 4 lines of code.
+### The managed TikTok Live Connector — receive chat, gifts, viewers, battles & 18+ events from any TikTok LIVE stream via WebSocket.
 
 [![npm version](https://img.shields.io/npm/v/@tiktool/live?color=%23ff0050&label=npm&logo=npm)](https://www.npmjs.com/package/@tiktool/live)
+[![npm downloads](https://img.shields.io/npm/dm/@tiktool/live)](https://www.npmjs.com/package/@tiktool/live)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js](https://img.shields.io/badge/Node.js-%3E%3D18-green?logo=node.js)](https://nodejs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue?logo=typescript)](https://www.typescriptlang.org)
 
-Real-time chat, gifts, viewers, battles, follows & 18+ event types from any TikTok livestream.
+> **99.9% uptime** — Never breaks when TikTok updates. No protobuf, no reverse engineering, no maintenance. Also available for [Python](https://pypi.org/project/tiktok-live-api/), [Java, Go, C#, and any language via WebSocket](https://tik.tools/docs).
 
-**NEW:** 🎤 [Real-Time Live Captions](#-real-time-live-captions) — AI-powered speech-to-text transcription & translation with speaker diarization and sub-second latency.
+**🎤 NEW:** [Real-Time Live Captions](#-real-time-live-captions) — AI-powered speech-to-text transcription & translation with speaker diarization. **No other TikTok library offers this.**
 
-[Quick Start](#-quick-start) · [Events](#-events) · [Live Captions](#-real-time-live-captions) · [API](#-api-reference) · [Rate Limits](#-rate-limits) · [Get API Key](https://tik.tools)
+[Try It Now](#-try-it-now--5-minute-live-demo) · [Events](#-events) · [Live Captions](#-real-time-live-captions) · [API](#-api-reference) · [Rate Limits](#-rate-limits) · [Get API Key](https://tik.tools)
 
 ---
 
@@ -21,25 +22,7 @@ Real-time chat, gifts, viewers, battles, follows & 18+ event types from any TikT
 npm install @tiktool/live
 ```
 
-Get your free API key at [tik.tools](https://tik.tools)
-
-```typescript
-import { TikTokLive } from '@tiktool/live';
-
-const live = new TikTokLive({
-    uniqueId: 'tv_asahi_news',
-    apiKey: 'YOUR_API_KEY',
-});
-
-live.on('chat', e => console.log(`${e.user.uniqueId}: ${e.comment}`));
-live.on('gift', e => console.log(`${e.user.uniqueId} sent ${e.giftName} (${e.diamondCount} diamonds)`));
-live.on('member', e => console.log(`${e.user.uniqueId} joined`));
-live.on('roomUserSeq', e => console.log(`Viewers: ${e.viewerCount}`));
-
-await live.connect();
-```
-
----
+Get your free API key at [tik.tools](https://tik.tools) — then run the demo below.
 
 ## 🚀 Try It Now — 5-Minute Live Demo
 
