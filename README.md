@@ -41,14 +41,14 @@ await live.connect();
 
 ---
 
-## 🚀 Try It Now — 60-Second Live Demo
+## 🚀 Try It Now — 5-Minute Live Demo
 
-Copy-paste this into a file and run it. Connects to a live TikTok stream, prints every event for 60 seconds, then exits. Works on the free Sandbox tier.
+Copy-paste this into a file and run it. Connects to a live TikTok stream, prints every event for 5 minutes, then exits. Works on the free Sandbox tier.
 
 **Save as `demo.mjs` and run with `node demo.mjs`:**
 
 ```javascript
-// demo.mjs — TikTok LIVE in 60 seconds
+// demo.mjs — TikTok LIVE in 5 minutes
 // npm install @tiktool/live
 import { TikTokLive } from '@tiktool/live';
 
@@ -68,11 +68,11 @@ live.on('roomUserSeq', e => { events++; console.log(`👀 Viewers: ${e.viewerCou
 live.on('subscribe',   e => { events++; console.log(`⭐ ${e.user.uniqueId} subscribed`); });
 live.on('battle',      e => { events++; console.log(`⚔️  Battle update`); });
 
-live.on('connected',   () => console.log(`\n✅ Connected to @${LIVE_USERNAME} — listening for 60s...\n`));
+live.on('connected',   () => console.log(`\n✅ Connected to @${LIVE_USERNAME} — listening for 5 min...\n`));
 live.on('disconnected', () => console.log(`\n📊 Done! Received ${events} events.\n`));
 
 await live.connect();
-setTimeout(() => { live.disconnect(); }, 60_000);
+setTimeout(() => { live.disconnect(); }, 300_000);
 ```
 
 <details>
@@ -91,7 +91,7 @@ const LIVE_USERNAME = 'tv_asahi_news';
 const ws = new WebSocket(`wss://api.tik.tools?uniqueId=${LIVE_USERNAME}&apiKey=${API_KEY}`);
 let events = 0;
 
-ws.on('open', () => console.log(`\n✅ Connected to @${LIVE_USERNAME} — listening for 60s...\n`));
+ws.on('open', () => console.log(`\n✅ Connected to @${LIVE_USERNAME} — listening for 5 min...\n`));
 ws.on('message', (raw) => {
   const msg = JSON.parse(raw);
   events++;
@@ -109,7 +109,7 @@ ws.on('message', (raw) => {
 });
 ws.on('close', () => console.log(`\n📊 Done! Received ${events} events.\n`));
 
-setTimeout(() => ws.close(), 60_000);
+setTimeout(() => ws.close(), 300_000);
 ```
 
 </details>
@@ -331,7 +331,7 @@ All API requests require an API key. Get yours at [tik.tools](https://tik.tools)
 
 | Tier | Requests/Day | Rate Limit | WS Connections | WS Duration | WS Connects | Bulk Check | CAPTCHA | Feed Discovery | Price |
 |------|-------------|-----------|----------------|-------------|-------------|------------|---------|----------------|-------|
-| **Sandbox** | 50 | 5/min | 1 | 60 sec | 10/hr · 30/day | 1 | ✕ | ✕ | Free |
+| **Sandbox** | 50 | 5/min | 1 | 5 min | 10/hr · 30/day | 1 | ✕ | ✕ | Free |
 | **Basic** | 10,000 | 60/min | 3 | 8 hours | 60/hr · 200/day | 10 | ✕ | ✕ | From $7/wk |
 | **Pro** | 75,000 | Unlimited | 50 | 8 hours | Unlimited | 50 | 50/day | 100/day | From $15/wk |
 | **Ultra** | 300,000 | Unlimited | 500 | 8 hours | Unlimited | 500 | 500/day | 2,000/day | From $45/wk |
