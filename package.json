@@ -34,7 +34,7 @@
     "homepage": "https://tik.tools",
     "repository": {
         "type": "git",
-        "url": "https://github.com/tiktool/live"
+        "url": "git+https://github.com/tiktool/tiktok-live-api.git"
     },
     "bugs": {
         "url": "https://github.com/tiktool/live/issues"
