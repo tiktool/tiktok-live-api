@@ -41,6 +41,81 @@ await live.connect();
 
 ---
 
+## 🚀 Try It Now — 60-Second Live Demo
+
+Copy-paste this into a file and run it. Connects to a live TikTok stream, prints every event for 60 seconds, then exits. Works on the free Sandbox tier.
+
+**Save as `demo.mjs` and run with `node demo.mjs`:**
+
+```javascript
+// demo.mjs — TikTok LIVE in 60 seconds
+// npm install @tiktool/live
+import { TikTokLive } from '@tiktool/live';
+
+const API_KEY       = 'YOUR_API_KEY';        // Get free key → https://tik.tools
+const LIVE_USERNAME = 'tv_asahi_news';       // Any live TikTok username
+
+const live = new TikTokLive({ uniqueId: LIVE_USERNAME, apiKey: API_KEY });
+let events = 0;
+
+live.on('chat',        e => { events++; console.log(`💬 ${e.user.uniqueId}: ${e.comment}`); });
+live.on('gift',        e => { events++; console.log(`🎁 ${e.user.uniqueId} sent ${e.giftName} (${e.diamondCount}💎)`); });
+live.on('like',        e => { events++; console.log(`❤️  ${e.user.uniqueId} liked × ${e.likeCount}`); });
+live.on('member',      e => { events++; console.log(`👋 ${e.user.uniqueId} joined`); });
+live.on('follow',      e => { events++; console.log(`➕ ${e.user.uniqueId} followed`); });
+live.on('share',       e => { events++; console.log(`🔗 ${e.user.uniqueId} shared`); });
+live.on('roomUserSeq', e => { events++; console.log(`👀 Viewers: ${e.viewerCount}`); });
+live.on('subscribe',   e => { events++; console.log(`⭐ ${e.user.uniqueId} subscribed`); });
+live.on('battle',      e => { events++; console.log(`⚔️  Battle update`); });
+
+live.on('connected',   () => console.log(`\n✅ Connected to @${LIVE_USERNAME} — listening for 60s...\n`));
+live.on('disconnected', () => console.log(`\n📊 Done! Received ${events} events.\n`));
+
+await live.connect();
+setTimeout(() => { live.disconnect(); }, 60_000);
+```
+
+<details>
+<summary><strong>🔌 Pure WebSocket version (no SDK, any language)</strong></summary>
+
+Works with any WebSocket client. No dependencies except `ws` (Node.js) or your language's WebSocket library.
+
+```javascript
+// ws-demo.mjs — Pure WebSocket, zero SDK
+// npm install ws
+import WebSocket from 'ws';
+
+const API_KEY       = 'YOUR_API_KEY';
+const LIVE_USERNAME = 'tv_asahi_news';
+
+const ws = new WebSocket(`wss://api.tik.tools?uniqueId=${LIVE_USERNAME}&apiKey=${API_KEY}`);
+let events = 0;
+
+ws.on('open', () => console.log(`\n✅ Connected to @${LIVE_USERNAME} — listening for 60s...\n`));
+ws.on('message', (raw) => {
+  const msg = JSON.parse(raw);
+  events++;
+  const d = msg.data || {};
+  const user = d.user?.uniqueId || d.uniqueId || '';
+  switch (msg.event) {
+    case 'chat':        console.log(`💬 ${user}: ${d.comment}`); break;
+    case 'gift':        console.log(`🎁 ${user} sent ${d.giftName} (${d.diamondCount}💎)`); break;
+    case 'like':        console.log(`❤️  ${user} liked × ${d.likeCount}`); break;
+    case 'member':      console.log(`👋 ${user} joined`); break;
+    case 'roomUserSeq': console.log(`👀 Viewers: ${d.viewerCount}`); break;
+    case 'roomInfo':    console.log(`📡 Room: ${msg.roomId}`); break;
+    default:            console.log(`📦 ${msg.event}`); break;
+  }
+});
+ws.on('close', () => console.log(`\n📊 Done! Received ${events} events.\n`));
+
+setTimeout(() => ws.close(), 60_000);
+```
+
+</details>
+
+---
+
 ## How It Works
 
 ```
