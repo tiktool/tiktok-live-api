@@ -22,6 +22,8 @@ export interface ChatEvent {
   user: TikTokUser;
   comment: string;
   emotes: Array<{ emoteId: string; image: string }>;
+  /** Present only for starred (paid highlighted) chat messages. */
+  starred?: { claps: number; score: number };
 }
 
 /** Payload for `gift` events. */

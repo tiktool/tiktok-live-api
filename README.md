@@ -173,7 +173,7 @@ client.connect();
 
 | Event | Description | Key Fields |
 |-------|-------------|------------|
-| `chat` | Chat message | `user`, `comment`, `emotes` |
+| `chat` | Chat message | `user`, `comment`, `emotes`, `starred?` |
 | `gift` | Virtual gift | `user`, `giftName`, `diamondCount`, `repeatCount` |
 | `like` | Like event | `user`, `likeCount`, `totalLikes` |
 | `follow` | New follower | `user` |
