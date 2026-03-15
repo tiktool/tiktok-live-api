@@ -15,3 +15,6 @@ test-*
 
 # Build
 package/
+
+# Deploy scripts (never commit)
+deploy.*
