@@ -1,57 +1,48 @@
-export { TikTokLive } from './client.js';
-export { TikTokCaptions } from './captions.js';
-export { getRanklist, getRegionalRanklist, getLiveFeed, fetchFeed } from './api.js';
-export type { GetRanklistOptions, GetRegionalRanklistOptions, RegionalRanklistSignedResponse, GetLiveFeedOptions } from './api.js';
-export type {
-    TikTokCaptionsOptions,
-    TikTokCaptionsEvents,
-    CaptionData,
-    TranslationData,
-    CaptionCredits,
-    CaptionStatus,
-    CaptionError,
-} from './captions.js';
+/**
+ * tiktok-live-api — TikTok LIVE stream data client for Node.js & TypeScript.
+ *
+ * Connect to any TikTok LIVE stream and receive real-time events:
+ * chat messages, gifts, likes, follows, viewer counts, battles, and more.
+ * Also includes AI-powered live captions (speech-to-text) with real-time translation.
+ *
+ * @example
+ * ```typescript
+ * import { TikTokLive } from 'tiktok-live-api';
+ *
+ * const client = new TikTokLive('username', { apiKey: 'YOUR_KEY' });
+ *
+ * client.on('chat', (event) => {
+ *   console.log(`${event.user.uniqueId}: ${event.comment}`);
+ * });
+ *
+ * client.connect();
+ * ```
+ *
+ * @see {@link https://tik.tools/docs | Full API Documentation}
+ * @see {@link https://tik.tools | Get a free API key}
+ *
+ * @packageDocumentation
+ */
 
+export { TikTokLive } from './client';
+export type { TikTokLiveOptions } from './client';
+export { TikTokCaptions } from './captions';
+export type { TikTokCaptionsOptions } from './captions';
 export type {
-    TikTokLiveOptions,
-    TikTokLiveEvents,
-    RoomInfo,
-    LiveEvent,
-    BaseEvent,
-    ChatEvent,
-    MemberEvent,
-    LikeEvent,
-    GiftEvent,
-    SocialEvent,
-    RoomUserSeqEvent,
-    BattleEvent,
-    BattleArmiesEvent,
-    BattleTeam,
-    BattleTeamUser,
-    BattleTaskEvent,
-    BarrageEvent,
-    SubscribeEvent,
-    EmoteChatEvent,
-    EnvelopeEvent,
-    QuestionEvent,
-    ControlEvent,
-    RoomEvent,
-    LiveIntroEvent,
-    RankUpdateEvent,
-    LinkMicEvent,
-    UnknownEvent,
-    TikTokUser,
-    RanklistUser,
-    OnlineAudienceEntry,
-    AnchorRankListEntry,
-    RanklistSelfInfo,
-    OnlineAudienceResponse,
-    AnchorRankListResponse,
-    EntranceTab,
-    EntranceInfo,
-    EntranceResponse,
-    RanklistResponse,
-    FeedRoomOwner,
-    FeedRoom,
-    FeedSignedResponse,
-} from './types.js';
+  TikTokUser,
+  ChatEvent,
+  GiftEvent,
+  LikeEvent,
+  MemberEvent,
+  SocialEvent,
+  RoomUserSeqEvent,
+  BattleEvent,
+  CaptionEvent,
+  TranslationEvent,
+  CreditsEvent,
+  ConnectedEvent,
+  DisconnectedEvent,
+  ErrorEvent,
+  TikTokLiveEventMap,
+  TikTokCaptionsEventMap,
+} from './types';

@@ -2,20 +2,16 @@ node_modules/
 dist/
 *.tgz
 .DS_Store
+
+# Environment
 .env
 .env.*
 !.env.example
 
-# Development test/debug output
-test-*
+# Probe/test files
 *-probe*
-analyze-*
-battle-*
+test-*
 *.txt
-!llms.txt
-*.json
-!package.json
-!package-lock.json
-!tsconfig.json
-*.mjs
+
+# Build
 package/

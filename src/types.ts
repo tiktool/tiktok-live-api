@@ -1,519 +1,161 @@
+/**
+ * Type definitions for TikTok LIVE API events.
+ *
+ * These types provide IDE autocompletion and type safety
+ * when handling events from {@link TikTokLive} and {@link TikTokCaptions}.
+ *
+ * @packageDocumentation
+ */
+
+/** User profile attached to most LIVE events. */
 export interface TikTokUser {
-    id: string;
-    nickname: string;
-    uniqueId: string;
-    profilePicture?: string;
-    profilePictureUrl?: string;
-    badges?: string[];
-    /** User's gifter/spender level (1-50). Higher = more coins spent platform-wide. */
-    payGrade?: number;
+  userId: string;
+  uniqueId: string;
+  nickname: string;
+  profilePictureUrl: string;
+  followRole: number;
+  isSubscriber: boolean;
 }
 
-export interface BaseEvent {
-    type: string;
-    timestamp: number;
-    msgId: string;
+/** Payload for `chat` events. */
+export interface ChatEvent {
+  user: TikTokUser;
+  comment: string;
+  emotes: Array<{ emoteId: string; image: string }>;
 }
 
-export interface ChatEvent extends BaseEvent {
-    type: 'chat';
-    user: TikTokUser;
-    comment: string;
+/** Payload for `gift` events. */
+export interface GiftEvent {
+  user: TikTokUser;
+  giftId: number;
+  giftName: string;
+  diamondCount: number;
+  repeatCount: number;
+  repeatEnd: boolean;
 }
 
-export interface MemberEvent extends BaseEvent {
-    type: 'member';
-    user: TikTokUser;
-    action: number;
+/** Payload for `like` events. */
+export interface LikeEvent {
+  user: TikTokUser;
+  likeCount: number;
+  totalLikes: number;
 }
 
-export interface LikeEvent extends BaseEvent {
-    type: 'like';
-    user: TikTokUser;
-    likeCount: number;
-    totalLikes: number;
+/** Payload for `member` (viewer join) events. */
+export interface MemberEvent {
+  user: TikTokUser;
+  actionId: number;
 }
 
-export interface GiftEvent extends BaseEvent {
-    type: 'gift';
-    user: TikTokUser;
-    giftId: number;
-    giftName: string;
-    diamondCount: number;
-    repeatCount: number;
-    repeatEnd: boolean;
-    combo: boolean;
-    giftType: number;
-    groupId: string;
-    giftPictureUrl?: string;
+/** Payload for `follow` and `share` events. */
+export interface SocialEvent {
+  user: TikTokUser;
+  eventType: string;
 }
 
-export interface SocialEvent extends BaseEvent {
-    type: 'social';
-    user: TikTokUser;
-    action: 'follow' | 'share' | string;
+/** Payload for `roomUserSeq` (viewer count) events. */
+export interface RoomUserSeqEvent {
+  viewerCount: number;
+  topViewers: TikTokUser[];
 }
 
-export interface RoomUserSeqEvent extends BaseEvent {
-    type: 'roomUserSeq';
-    viewerCount: number;
-    totalViewers: number;
+/** Payload for `battle` events. */
+export interface BattleEvent {
+  type: string;
+  teams: Array<Record<string, unknown>>;
+  scores: number[];
 }
 
-export interface BattleTeamUser {
-    user: TikTokUser;
-    score: number;
+/** Payload for `roomPin` (starred/pinned message) events. */
+export interface RoomPinEvent {
+  /** User who wrote the pinned message. */
+  user: TikTokUser;
+  /** The pinned comment text. */
+  comment: string;
+  /** Pin action: 1 = pin, 2 = unpin. */
+  action: number;
+  /** How long the message stays pinned (seconds). */
+  durationSeconds: number;
+  /** Timestamp when the message was pinned (ms). */
+  pinnedAt: number;
+  /** Original message type (e.g. "WebcastChatMessage"). */
+  originalMsgType: string;
+  /** Original message ID that was pinned. */
+  originalMsgId: string;
+  /** User ID of the operator who pinned the message. */
+  operatorUserId: string;
 }
 
-export interface BattleTeam {
-    hostUserId: string;
-    score: number;
-    users: BattleTeamUser[];
-    hostUser?: TikTokUser;
+/** Payload for `caption` events from {@link TikTokCaptions}. */
+export interface CaptionEvent {
+  text: string;
+  speaker: string;
+  isFinal: boolean;
+  language: string;
 }
 
-export interface BattleEvent extends BaseEvent {
-    type: 'battle';
-    battleId: string;
-    status: number;
-    battleDuration: number;
-    teams: BattleTeam[];
-    battleSettings?: {
-        startTimeMs?: number;
-        duration?: number;
-        endTimeMs?: number;
-    };
+/** Payload for `translation` events from {@link TikTokCaptions}. */
+export interface TranslationEvent {
+  text: string;
+  sourceLanguage: string;
+  targetLanguage: string;
 }
 
-export interface BattleArmiesEvent extends BaseEvent {
-    type: 'battleArmies';
-    battleId: string;
-    status: number;
-    teams: BattleTeam[];
-    battleSettings?: {
-        startTimeMs?: number;
-        duration?: number;
-        endTimeMs?: number;
-    };
-    scoreUpdateTime?: number;
-    giftSentTime?: number;
+/** Payload for `credits` events from {@link TikTokCaptions}. */
+export interface CreditsEvent {
+  total: number;
+  used: number;
+  remaining: number;
 }
 
-export interface BattleTaskEvent extends BaseEvent {
-    type: 'battleTask';
-    taskAction: number;
-    battleRefId: string;
-    missionType: string;
-    multiplier: number;
-    missionDuration: number;
-    missionTarget: number;
-    remainingSeconds: number;
-    endTimestampS: number;
-    timerType: number;
+/** Connection event payload. */
+export interface ConnectedEvent {
+  uniqueId: string;
 }
 
-export interface BarrageEvent extends BaseEvent {
-    type: 'barrage';
-    msgType: number;
-    subType: number;
-    displayType: number;
-    duration: number;
-    defaultPattern: string;
-    content: string;
+/** Disconnection event payload. */
+export interface DisconnectedEvent {
+  uniqueId: string;
 }
 
-export interface SubscribeEvent extends BaseEvent {
-    type: 'subscribe';
-    user: TikTokUser;
-    subMonth: number;
-}
-
-export interface EmoteChatEvent extends BaseEvent {
-    type: 'emoteChat';
-    user: TikTokUser;
-    emoteId: string;
-    emoteUrl: string;
-    emoteName?: string;
-}
-
-export interface EnvelopeEvent extends BaseEvent {
-    type: 'envelope';
-    envelopeId: string;
-    diamondCount: number;
-}
-
-export interface QuestionEvent extends BaseEvent {
-    type: 'question';
-    user: TikTokUser;
-    questionText: string;
-}
-
-export interface ControlEvent extends BaseEvent {
-    type: 'control';
-    action: number;
-}
-
-export interface RoomEvent extends BaseEvent {
-    type: 'room';
-    status: number;
-}
-
-export interface LiveIntroEvent extends BaseEvent {
-    type: 'liveIntro';
-    roomId: string;
-    title: string;
-}
-
-export interface RankUpdateEvent extends BaseEvent {
-    type: 'rankUpdate';
-    rankType: string;
-    rankList: Array<{ user: TikTokUser; rank: number; score: number }>;
-}
-
-export interface LinkMicEvent extends BaseEvent {
-    type: 'linkMic';
-    action: string;
-    users: TikTokUser[];
-}
-
-export interface UnknownEvent extends BaseEvent {
-    type: 'unknown';
-    method: string;
-}
-
-export type LiveEvent =
-    | ChatEvent
-    | MemberEvent
-    | LikeEvent
-    | GiftEvent
-    | SocialEvent
-    | RoomUserSeqEvent
-    | BattleEvent
-    | BattleArmiesEvent
-    | BattleTaskEvent
-    | BarrageEvent
-    | SubscribeEvent
-    | EmoteChatEvent
-    | EnvelopeEvent
-    | QuestionEvent
-    | ControlEvent
-    | RoomEvent
-    | LiveIntroEvent
-    | RankUpdateEvent
-    | LinkMicEvent
-    | UnknownEvent;
-
-export interface TikTokLiveEvents {
-    connected: () => void;
-    disconnected: (code: number, reason: string) => void;
-    roomInfo: (info: RoomInfo) => void;
-    error: (error: Error) => void;
-    chat: (event: ChatEvent) => void;
-    member: (event: MemberEvent) => void;
-    like: (event: LikeEvent) => void;
-    gift: (event: GiftEvent) => void;
-    social: (event: SocialEvent) => void;
-    roomUserSeq: (event: RoomUserSeqEvent) => void;
-    battle: (event: BattleEvent) => void;
-    battleArmies: (event: BattleArmiesEvent) => void;
-    battleTask: (event: BattleTaskEvent) => void;
-    barrage: (event: BarrageEvent) => void;
-    subscribe: (event: SubscribeEvent) => void;
-    emoteChat: (event: EmoteChatEvent) => void;
-    envelope: (event: EnvelopeEvent) => void;
-    question: (event: QuestionEvent) => void;
-    control: (event: ControlEvent) => void;
-    room: (event: RoomEvent) => void;
-    liveIntro: (event: LiveIntroEvent) => void;
-    rankUpdate: (event: RankUpdateEvent) => void;
-    linkMic: (event: LinkMicEvent) => void;
-    unknown: (event: UnknownEvent) => void;
-    event: (event: LiveEvent) => void;
-}
-
-export interface RoomInfo {
-    roomId: string;
-    wsHost: string;
-    clusterRegion: string;
-    connectedAt: string;
-    ownerUserId?: string;
-}
-
-export interface TikTokLiveOptions {
-    uniqueId: string;
-    signServerUrl?: string;
-    apiKey: string;
-    autoReconnect?: boolean;
-    maxReconnectAttempts?: number;
-    heartbeatInterval?: number;
-    debug?: boolean;
-    webSocketImpl?: any;
-    /**
-     * TikTok browser session ID cookie for authenticated connections.
-     * Enables ranklist API access and authenticated WebSocket features.
-     * Obtain from the user's tiktok.com browser cookies.
-     */
-    sessionId?: string;
-    /**
-     * TikTok target IDC region (e.g. 'useast5').
-     * Required when sessionId is provided — must match the account's region.
-     */
-    ttTargetIdc?: string;
-    /**
-     * HTTP agent for routing connections through a proxy.
-     * Pass an HttpsProxyAgent (or any http.Agent) to route both the
-     * initial HTTP request and WebSocket connection through a proxy.
-     *
-     * Example:
-     *   import { HttpsProxyAgent } from 'https-proxy-agent';
-     *   agent: new HttpsProxyAgent('http://user:pass@host:port')
-     */
-    agent?: import('http').Agent;
-
-    /**
-     * If you already know the room ID (e.g. from a leaderboard API),
-     * pass it here to skip the HTML page scrape entirely.
-     * This avoids geo-restriction issues and speeds up connection.
-     */
-    roomId?: string;
-
-    /**
-     * Pre-fetched ttwid cookie. When provided along with roomId,
-     * the library skips the HTTP fetch to tiktok.com entirely.
-     * Fetch once and share across multiple TikTokLive instances.
-     */
-    ttwid?: string;
-}
-
-// ── Ranklist Types ────────────────────────────────────────────
-
-export interface RanklistUser {
-    /** TikTok user ID */
-    id_str: string;
-    /** Display name */
-    nickname: string;
-    /** Username (@handle) */
-    display_id?: string;
-    unique_id?: string;
-    /** Avatar thumbnail URLs */
-    avatar_thumb?: { url_list: string[] };
-    /** Full avatar URLs */
-    avatar_medium?: { url_list: string[] };
-    /** Follower info */
-    follow_info?: {
-        follow_status: number;
-        follower_count: number;
-        following_count: number;
-    };
+/** Error event payload. */
+export interface ErrorEvent {
+  error: string;
 }
 
 /**
- * Entry from online_audience endpoint (in-room top gifters).
- * Has explicit `rank` (1-based) and `score` fields.
+ * Map of event names to their payload types for {@link TikTokLive}.
  */
-export interface OnlineAudienceEntry {
-    rank: number;
-    score: number;
-    user: RanklistUser;
+export interface TikTokLiveEventMap {
+  chat: ChatEvent;
+  gift: GiftEvent;
+  like: LikeEvent;
+  follow: SocialEvent;
+  share: SocialEvent;
+  member: MemberEvent;
+  subscribe: SocialEvent;
+  roomUserSeq: RoomUserSeqEvent;
+  battle: BattleEvent;
+  roomPin: RoomPinEvent;
+  envelope: Record<string, unknown>;
+  streamEnd: Record<string, unknown>;
+  roomInfo: Record<string, unknown>;
+  connected: ConnectedEvent;
+  disconnected: DisconnectedEvent;
+  error: ErrorEvent;
+  event: Record<string, unknown>;
 }
 
 /**
- * Entry from anchor/rank_list endpoint (leaderboard/gifter rankings).
- * Position is the array index. Uses `value` (not `score`).
+ * Map of event names to their payload types for {@link TikTokCaptions}.
  */
-export interface AnchorRankListEntry {
-    /** Gift value (diamonds/coins) */
-    value: number;
-    /** Rank category type (e.g. 3 = gifter) */
-    rank_type: number;
-    /** Time period type (e.g. 1 = hourly) */
-    rank_time_type: number;
-    /** Auto-thanks message configured by anchor */
-    auto_thanks_message?: string;
-    /** Schema URL for navigation */
-    schema_url?: string;
-    /** Highlight DM share status */
-    highlight_dm_share_status?: number;
-    /** Ranked user data */
-    user: RanklistUser;
-}
-
-export interface RanklistSelfInfo {
-    rank: number;
-    score: number;
-    gap_description?: string;
-}
-
-/** Response from "online_audience" sub-endpoint — in-room top gifters */
-export interface OnlineAudienceResponse {
-    status_code: number;
-    data: {
-        ranks: OnlineAudienceEntry[];
-        self_info?: RanklistSelfInfo;
-        currency?: string;
-        total?: number;
-    };
-}
-
-/** Response from "anchor_rank_list" sub-endpoint — gifter leaderboard */
-export interface AnchorRankListResponse {
-    status_code: number;
-    data: {
-        rank_list: AnchorRankListEntry[];
-        /** Room where ranks were accumulated */
-        latest_room_id_str?: string;
-        /** Rank period start (unix timestamp) */
-        rank_time_begin?: number;
-        /** Rank period end (unix timestamp) */
-        rank_time_end?: number;
-        /** Whether to show rank summary */
-        show_rank_summary?: boolean;
-        /** Default rank type for this anchor */
-        default_rank_type?: number;
-    };
-}
-
-/** Entrance tab info from "entrance" sub-endpoint */
-export interface EntranceTab {
-    title: string;
-    rank_type: number;
-    list_lynx_type?: number;
-}
-
-/** Entrance config for a single rank_type */
-export interface EntranceInfo {
-    rank_type: number;
-    /** Whether the anchor appears in this ranking */
-    owner_on_rank: boolean;
-    /** Anchor's position in this ranking (0-based) */
-    owner_rank_idx?: number;
-    /** Current score in this ranking */
-    current_score?: number;
-    /** Countdown in seconds until ranking resets */
-    countdown?: number;
-    /** Window size in seconds (86400 = daily) */
-    window_size?: number;
-    /** Unix timestamp when ranking resets */
-    reset_time?: number;
-    /** Related tab to show when clicking this entrance */
-    related_tab_rank_type?: number;
-    /** Gap description with points needed to reach a rank */
-    affiliated_content?: {
-        gap_desc?: {
-            default_pattern: string;
-            pieces?: Array<{ string_value: string; type: number }>;
-        };
-    };
-    /** Class/League info */
-    class_info?: {
-        class_type: number;
-        star_count: number;
-    };
-}
-
-export interface EntranceResponse {
-    status_code: number;
-    data: Array<{
-        group_type?: number;
-        Priority?: number;
-        data?: {
-            tabs?: EntranceTab[];
-            entrances?: EntranceInfo[];
-        };
-    }>;
-}
-
-export type RanklistResponse = OnlineAudienceResponse | AnchorRankListResponse | EntranceResponse;
-
-// ── CAPTCHA Solver Types ────────────────────────────────────────────
-
-export interface PuzzleSolveResult {
-    /** Proportion of slide position (0-1) */
-    slide_x_proportion: number;
-    /** Pixel X position to slide to */
-    slide_x_px: number;
-    /** Solver confidence (0-1) */
-    confidence: number;
-    /** Time taken to solve in milliseconds */
-    solve_time_ms: number;
-}
-
-export interface RotateSolveResult {
-    /** Rotation angle in degrees */
-    angle: number;
-    /** Solver confidence (0-1) */
-    confidence: number;
-    /** Time taken to solve in milliseconds */
-    solve_time_ms: number;
-}
-
-export interface ShapesSolveResult {
-    /** First matching shape coordinate */
-    point1: { x: number; y: number };
-    /** Second matching shape coordinate */
-    point2: { x: number; y: number };
-    /** Solver confidence (0-1) */
-    confidence: number;
-    /** Time taken to solve in milliseconds */
-    solve_time_ms: number;
-}
-
-// ── Feed Discovery Types ────────────────────────────────────────────
-
-/** Streamer info in a feed room entry */
-export interface FeedRoomOwner {
-    /** TikTok user ID */
-    id_str: string;
-    /** Username (@handle) */
-    display_id: string;
-    /** Display name */
-    nickname: string;
-    /** Avatar thumbnail URLs */
-    avatar_thumb?: { url_list: string[] };
-    /** Avatar large URLs */
-    avatar_large?: { url_list: string[] };
-}
-
-/** A single live room entry from the feed */
-export interface FeedRoom {
-    /** Room ID */
-    id_str: string;
-    /** Stream title */
-    title: string;
-    /** Current viewer count */
-    user_count: number;
-    /** Stream cover image URL */
-    cover?: { url_list: string[] };
-    /** Streamer info */
-    owner: FeedRoomOwner;
-    /** Stream status (2 = live) */
-    status: number;
-    /** Stream start time (unix seconds) */
-    create_time?: number;
-    /** Like count */
-    like_count?: number;
-    /** Hashtag IDs */
-    hashtag_ids?: string[];
-}
-
-/** Signed-URL response from GET/POST /webcast/feed */
-export interface FeedSignedResponse {
-    /** Always 0 on success */
-    status_code: number;
-    /** The signed TikTok URL to fetch */
-    signed_url: string;
-    /** Required headers */
-    headers: Record<string, string>;
-    /** Cookies to include (ttwid, sessionid, etc.) */
-    cookies?: string;
-    /** Region used */
-    region: string;
-    /** Channel ID used */
-    channel_id: string;
-    /** Remaining daily feed calls */
-    feed_remaining: number;
-    /** Daily feed call limit */
-    feed_limit: number;
-    /** Human-readable instructions */
-    note: string;
+export interface TikTokCaptionsEventMap {
+  caption: CaptionEvent;
+  translation: TranslationEvent;
+  credits: CreditsEvent;
+  credits_low: CreditsEvent;
+  status: Record<string, unknown>;
+  connected: ConnectedEvent;
+  disconnected: DisconnectedEvent;
+  error: ErrorEvent;
 }
