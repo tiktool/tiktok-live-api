@@ -1,77 +1,84 @@
 {
-    "name": "@tiktool/live",
-    "version": "2.6.7",
-    "description": "TikTok LIVE API Client — Real-time chat, gifts, viewers, live captions (speech-to-text), AI transcription & translation from any TikTok livestream.",
-    "author": "tiktool",
-    "license": "MIT",
-    "keywords": [
-        "tiktok",
-        "tiktok-live",
-        "tiktok-api",
-        "tiktok-live-api",
-        "tiktok-live-connector",
-        "live-streaming",
-        "websocket",
-        "chat",
-        "gifts",
-        "tiktok-events",
-        "webcast",
-        "real-time",
-        "protobuf",
-        "tiktok-tools",
-        "live-chat",
-        "speech-to-text",
-        "stt",
-        "captions",
-        "transcription",
-        "translation",
-        "ai-captions",
-        "tiktok-captions",
-        "diarization",
-        "live-captions",
-        "tiktok-transcription"
-    ],
-    "homepage": "https://tik.tools",
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/tiktool/tiktok-live-api.git"
-    },
-    "bugs": {
-        "url": "https://github.com/tiktool/live/issues"
-    },
-    "main": "./dist/index.cjs",
-    "module": "./dist/index.mjs",
-    "types": "./dist/index.d.ts",
-    "exports": {
-        ".": {
-            "import": {
-                "types": "./dist/index.d.ts",
-                "default": "./dist/index.mjs"
-            },
-            "require": {
-                "types": "./dist/index.d.cts",
-                "default": "./dist/index.cjs"
-            }
-        }
-    },
-    "files": [
-        "dist",
-        "README.md",
-        "LICENSE"
-    ],
-    "scripts": {
-        "build": "tsup",
-        "prepublishOnly": "npm run build"
-    },
-    "dependencies": {
-        "ws": "^8.18.0"
-    },
-    "devDependencies": {
-        "@types/ws": "^8.5.14",
-        "tsup": "^8.3.0",
-        "typescript": "^5.7.0"
-    },
-    "engines": {
-        "node": ">=18"
+  "name": "tiktok-live-api",
+  "version": "1.1.0",
+  "description": "Unofficial TikTok LIVE API Client — Real-time chat, gifts, viewers, battles, and AI live captions from any TikTok livestream. Managed WebSocket API with 99.9% uptime.",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
     }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts --clean",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "tiktok",
+    "tiktok-live",
+    "tiktok-api",
+    "tiktok-live-api",
+    "tiktok-live-connector",
+    "tiktok-live-sdk",
+    "tiktok-websocket",
+    "tiktok-chat",
+    "tiktok-gifts",
+    "tiktok-bot",
+    "tiktok-data",
+    "tiktok-stream",
+    "tiktok-events",
+    "tiktok-viewer",
+    "live-streaming",
+    "live-chat",
+    "webcast",
+    "websocket",
+    "real-time",
+    "speech-to-text",
+    "captions",
+    "transcription",
+    "translation",
+    "tiktok-live-python",
+    "tiktok-tools",
+    "euler-stream",
+    "tiktoklive",
+    "tiktok-connector",
+    "tiktok-live-node",
+    "tiktok-live-js",
+    "tiktok-scraper",
+    "tiktok-monitoring",
+    "livestream-api"
+  ],
+  "author": {
+    "name": "TikTool",
+    "email": "support@tik.tools",
+    "url": "https://tik.tools"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tiktool/tiktok-live-api"
+  },
+  "bugs": {
+    "url": "https://github.com/tiktool/tiktok-live-api/issues"
+  },
+  "homepage": "https://tik.tools",
+  "dependencies": {
+    "ws": "^8.16.0"
+  },
+  "devDependencies": {
+    "@types/ws": "^8.5.10",
+    "tsup": "^8.0.0",
+    "typescript": "^5.3.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
 }
