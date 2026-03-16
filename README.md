@@ -9,6 +9,10 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue?logo=typescript)](https://www.typescriptlang.org)
 [![Discord](https://img.shields.io/discord/1482387222912172159?logo=discord&label=Discord&color=5865F2)](https://discord.gg/y8TwuFBAmD)
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/tiktool/tiktok-live-api/main/tiktok-live-api.gif" alt="TikTok Live API Demo — real-time chat, gifts, and viewer events" width="700">
+</p>
+
 > **99.9% uptime** — Never breaks when TikTok updates. No protobuf, no reverse engineering, no maintenance. Also available for [Python](https://pypi.org/project/tiktok-live-api/), [Java, Go, C#, and any language via WebSocket](https://tik.tools/docs).
 
 **🎤 NEW:** [Real-Time Live Captions](#-real-time-live-captions) — AI-powered speech-to-text transcription & translation with speaker diarization. **No other TikTok library offers this.**
@@ -141,7 +145,7 @@ live.on('event', (event) => {
 
 | Event | Type | Description | Fields |
 |-------|------|-------------|--------|
-| `chat` | `ChatEvent` | Chat message | `user`, `comment` |
+| `chat` | `ChatEvent` | Chat message | `user`, `comment`, `starred?` |
 | `member` | `MemberEvent` | User joined | `user`, `action` |
 | `like` | `LikeEvent` | User liked | `user`, `likeCount`, `totalLikes` |
 | `gift` | `GiftEvent` | Gift sent | `user`, `giftName`, `diamondCount`, `repeatCount`, `combo` |
@@ -158,6 +162,7 @@ live.on('event', (event) => {
 | `liveIntro` | `LiveIntroEvent` | Stream intro | `title` |
 | `rankUpdate` | `RankUpdateEvent` | Rank update | `rankType` |
 | `linkMic` | `LinkMicEvent` | Link Mic | `action` |
+| `roomPin` | `RoomPinEvent` | Pinned/starred message | `user`, `comment`, `action`, `durationSeconds` |
 | `unknown` | `UnknownEvent` | Unrecognized | `method` |
 
 ### Connection Events
