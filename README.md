@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="banner.png" alt="tiktok-live-api" width="100%" />
+</p>
+
 # tiktok-live-api
 
 **Unofficial TikTok LIVE API Client for Node.js & TypeScript** — Connect to any TikTok LIVE stream and receive real-time chat messages, gifts, likes, follows, viewer counts, battles, and more. Includes AI-powered live captions (speech-to-text). Powered by the [TikTool](https://tik.tools) managed API.
