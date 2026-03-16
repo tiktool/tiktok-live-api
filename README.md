@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="banner.png" alt="tiktok-live-api" width="100%" />
+</p>
+
 # tiktok-live-api
 
 **Unofficial TikTok LIVE API Client for Node.js & TypeScript** — Connect to any TikTok LIVE stream and receive real-time chat messages, gifts, likes, follows, viewer counts, battles, and more. Includes AI-powered live captions (speech-to-text). Powered by the [TikTool](https://tik.tools) managed API.
@@ -11,11 +15,6 @@
 <p align="center">
   <img src="https://raw.githubusercontent.com/tiktool/tiktok-live-api/main/tiktok-live-api.gif" alt="TikTok Live API Demo — real-time chat, gifts, and viewer events" width="700">
 </p>
-<<<<<<< HEAD
-
-> **99.9% uptime** — Never breaks when TikTok updates. No protobuf, no reverse engineering, no maintenance. Also available for [Python](https://pypi.org/project/tiktok-live-api/), [Java, Go, C#, and any language via WebSocket](https://tik.tools/docs).
-=======
->>>>>>> ac7990ac0be77c4206d9d8fa0bccbe1c85a2bbe6
 
 > This package is **not affiliated with or endorsed by TikTok**. It connects to the [TikTool Live](https://tik.tools) managed API service — 99.9% uptime, no reverse engineering, no maintenance required. Also available for [Python](https://pypi.org/project/tiktok-live-api/) and [any language via WebSocket](https://tik.tools/docs).
 
