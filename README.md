@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="banner.png" alt="tiktok-live-api" width="100%" />
+  <img src="https://raw.githubusercontent.com/tiktool/tiktok-live-api/main/banner.png" alt="tiktok-live-api" width="100%" />
 </p>
 
 # tiktok-live-api
