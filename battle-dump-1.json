@@ -1,0 +1,75 @@
+{
+  "timestamp": 1771284518876,
+  "msgId": "",
+  "type": "battleArmies",
+  "battleId": "",
+  "teams": [
+    {
+      "hostUserId": "6958047938976040000",
+      "score": 122,
+      "users": [
+        {
+          "user": {
+            "id": "7227778207670994000",
+            "nickname": "𝔪𝔞𝔯𝔦𝔫𝔬𝔰𝔬𝔣𝔣𝔦𝔠𝔦𝔞𝔩",
+            "uniqueId": "𝔪𝔞𝔯𝔦𝔫𝔬𝔰𝔬𝔣𝔣𝔦𝔠𝔦𝔞𝔩",
+            "profilePictureUrl": "https://p16-pu-sign-no.tiktokcdn-eu.com/tos-no1a-avt-0068c001-no/64d11e6bdc7382f238964ddce0d72f52~tplv-tiktokx-cropcenter:100:100.webp?dr=10399&refresh_token=3b01b930&x-expires=1771455600&x-signature=jSyNMZsodE%2BIrrJ5fvjwNrlsnAQ%3D&t=4d5b0474&ps=13740610&shp=a5d48078&shcp=fdd36af4&idc=no1a"
+          },
+          "score": 122
+        },
+        {
+          "user": {
+            "id": "6917225905066001000",
+            "nickname": "Zaxaroulla🍫🐉",
+            "uniqueId": "Zaxaroulla🍫🐉",
+            "profilePictureUrl": "https://p16-common-sign.tiktokcdn-eu.com/tos-no1a-avt-0068c001-no/d11a533f3c7766c68e14a507dabb61cf~tplv-tiktokx-cropcenter:100:100.webp?dr=10399&refresh_token=6b95461f&x-expires=1771455600&x-signature=Mpvd6%2B0AnZVdnaCAlIkqwFLMaUs%3D&t=4d5b0474&ps=13740610&shp=a5d48078&shcp=fdd36af4&idc=no1a"
+          },
+          "score": 122
+        },
+        {
+          "user": {
+            "id": "7487635496576615000",
+            "nickname": "ΜΑΜΙΑ ΜΟΥ🐉",
+            "uniqueId": "ΜΑΜΙΑ ΜΟΥ🐉",
+            "profilePictureUrl": "https://p16-pu-sign-no.tiktokcdn-eu.com/tos-no1a-avt-0068c001-no/35be222db7d8cba91bcd3ed303f3d625~tplv-tiktokx-cropcenter:100:100.webp?dr=10399&refresh_token=15d85aaa&x-expires=1771455600&x-signature=ZmyxduqgMkR%2FI66UJlRs0JVDz1U%3D&t=4d5b0474&ps=13740610&shp=a5d48078&shcp=fdd36af4&idc=no1a"
+          },
+          "score": 122
+        }
+      ]
+    },
+    {
+      "hostUserId": "6843116833038452000",
+      "score": 75,
+      "users": [
+        {
+          "user": {
+            "id": "6820160746322150000",
+            "nickname": "Yiannis Aristidou〽️™️",
+            "uniqueId": "Yiannis Aristidou〽️™️",
+            "profilePictureUrl": "https://p16-pu-sign-no.tiktokcdn-eu.com/tos-no1a-avt-0068c001-no/98f6ed9affc84b9e8779d9622131e488~tplv-tiktokx-cropcenter:100:100.webp?dr=10399&refresh_token=d095d26c&x-expires=1771455600&x-signature=cT1n6DJQ6sf6M7KisMXXxhmWIKU%3D&t=4d5b0474&ps=13740610&shp=a5d48078&shcp=fdd36af4&idc=no1a"
+          },
+          "score": 75
+        },
+        {
+          "user": {
+            "id": "6970402454954051000",
+            "nickname": "dimi",
+            "uniqueId": "dimi",
+            "profilePictureUrl": "https://p16-common-sign.tiktokcdn-eu.com/tos-maliva-avt-0068/7336659809195786246~tplv-tiktokx-cropcenter:100:100.webp?dr=10399&refresh_token=0462bca7&x-expires=1771455600&x-signature=H4at6yeZSazZXRr7XDcIrvKT9%2FA%3D&t=4d5b0474&ps=13740610&shp=a5d48078&shcp=fdd36af4&idc=no1a"
+          },
+          "score": 75
+        },
+        {
+          "user": {
+            "id": "6825556849175332000",
+            "nickname": "giwrgos",
+            "uniqueId": "giwrgos",
+            "profilePictureUrl": "https://p16-common-sign-useastred.tiktokcdn-eu.com/tos-useast2a-avt-0068-euttp/e6f1e22f94ac14883a14bf59c6525998~tplv-tiktokx-cropcenter:100:100.webp?dr=10399&refresh_token=644e1518&x-expires=1771455600&x-signature=AxeJF61rhgDiivSJgMdueWVxCv0%3D&t=4d5b0474&ps=13740610&shp=a5d48078&shcp=fdd36af4&idc=no1a"
+          },
+          "score": 75
+        }
+      ]
+    }
+  ],
+  "status": 4
+}
