@@ -4,6 +4,8 @@
 
 # tiktok-live-api
 
+> 📖 **Full documentation, guides, and dashboard → [tik.tools](https://tik.tools)** &nbsp;|&nbsp; 🐍 **Python SDK → [tik.tools/guides/python-tiktok-live](https://tik.tools/guides/python-tiktok-live)** &nbsp;|&nbsp; 🔌 **WebSocket API → [tik.tools/websocket](https://tik.tools/websocket)**
+
 **Unofficial TikTok LIVE API Client for Node.js & TypeScript** — Connect to any TikTok LIVE stream and receive real-time chat messages, gifts, likes, follows, viewer counts, battles, and more. Includes AI-powered live captions (speech-to-text). Powered by the [TikTool](https://tik.tools) managed API.
 
 [![npm](https://img.shields.io/npm/v/tiktok-live-api)](https://www.npmjs.com/package/tiktok-live-api)
@@ -207,73 +209,10 @@ Transcribe and translate any TikTok LIVE stream in real-time. **This feature is 
 ```typescript
 import { TikTokCaptions } from 'tiktok-live-api';
 
-<<<<<<< HEAD
-live.on('event', (event) => {
-    console.log(event.type, event);
-});
-```
-
-### Reference
-
-| Event | Type | Description | Fields |
-|-------|------|-------------|--------|
-| `chat` | `ChatEvent` | Chat message | `user`, `comment`, `starred?` |
-| `member` | `MemberEvent` | User joined | `user`, `action` |
-| `like` | `LikeEvent` | User liked | `user`, `likeCount`, `totalLikes` |
-| `gift` | `GiftEvent` | Gift sent | `user`, `giftName`, `diamondCount`, `repeatCount`, `combo` |
-| `social` | `SocialEvent` | Follow / Share | `user`, `action` |
-| `roomUserSeq` | `RoomUserSeqEvent` | Viewer count | `viewerCount`, `totalViewers` |
-| `battle` | `BattleEvent` | Link Mic battle | `status` |
-| `battleArmies` | `BattleArmiesEvent` | Battle teams | — |
-| `subscribe` | `SubscribeEvent` | New subscriber | `user`, `subMonth` |
-| `emoteChat` | `EmoteChatEvent` | Emote in chat | `user`, `emoteId` |
-| `envelope` | `EnvelopeEvent` | Treasure chest | `diamondCount` |
-| `question` | `QuestionEvent` | Q&A question | `user`, `questionText` |
-| `control` | `ControlEvent` | Stream control | `action` (3 = ended) |
-| `room` | `RoomEvent` | Room status | `status` |
-| `liveIntro` | `LiveIntroEvent` | Stream intro | `title` |
-| `rankUpdate` | `RankUpdateEvent` | Rank update | `rankType` |
-| `linkMic` | `LinkMicEvent` | Link Mic | `action` |
-| `roomPin` | `RoomPinEvent` | Pinned/starred message | `user`, `comment`, `action`, `durationSeconds` |
-| `unknown` | `UnknownEvent` | Unrecognized | `method` |
-
-### Connection Events
-
-| Event | Callback | Description |
-|-------|----------|-------------|
-| `connected` | `() => void` | Connected to stream |
-| `disconnected` | `(code, reason) => void` | Disconnected |
-| `roomInfo` | `(info: RoomInfo) => void` | Room info |
-| `error` | `(error: Error) => void` | Error |
-
----
-
-## 🎤 Real-Time Live Captions
-
-AI-powered speech-to-text transcription and translation for TikTok LIVE streams. Features include:
-
-- **Auto-detect language** — Automatically identifies the spoken language
-- **Speaker diarization** — Identifies individual speakers in multi-person streams
-- **Real-time translation** — Translate to any supported language with sub-second latency
-- **Partial + final results** — Get streaming partial transcripts and confirmed final text
-- **Credit-based billing** — 1 credit = 1 minute of transcription/translation
-
-### Quick Start
-
-```typescript
-import { TikTokCaptions } from '@tiktool/live';
-
-const captions = new TikTokCaptions({
-    uniqueId: 'streamer_name',
-    apiKey: 'YOUR_API_KEY',
-    translate: 'en',
-    diarization: true,
-=======
 const captions = new TikTokCaptions('streamer_username', {
   apiKey: 'YOUR_API_KEY',
   translate: 'en',       // translate to English
   diarization: true,     // identify who is speaking
->>>>>>> ac7990ac0be77c4206d9d8fa0bccbe1c85a2bbe6
 });
 
 captions.on('caption', (event) => {
