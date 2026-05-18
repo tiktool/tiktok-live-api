@@ -191,7 +191,9 @@ client.connect();
 | `member` | Viewer joined | `user` |
 | `subscribe` | New subscriber | `user` |
 | `roomUserSeq` | Viewer count | `viewerCount`, `topViewers` |
-| `battle` | Battle event | `type`, `teams`, `scores` |
+| `battle` | PK start / end / status change | `battleId`, `status` (1=ACTIVE / 2=STARTING / 3=ENDED / 4=PREPARING), `battleDuration`, `teams` |
+| `battleArmies` | Live PK score update | `battleId`, `status`, `matchId`, `sessionId`, `durationSec`, `secsRemaining`, `hosts[]` — each host has `teamTotalScore` + `contributors[]` (MVP first) |
+| `battleItemCard` | Booster multipliers, gloves, mist, match-guide, thunder, extra-time | `effect` (`'gloves'` / `'mist'` / `'booster_x2'` / `'booster_x3'` / `'match_guide'` / ...), `multiplier` (2 or 3), `senderUserId`, `senderNickname`, `activatedAtSec`, `durationSec`, `endsAtSec`, `commentTemplate` |
 | `roomPin` | Pinned/starred message | `user`, `comment`, `action`, `durationSeconds` |
 | `envelope` | Treasure chest | `diamonds`, `user` |
 | `streamEnd` | Stream ended | `reason` |
@@ -201,6 +203,33 @@ client.connect();
 | `event` | Catch-all | Full raw event |
 
 All events are fully typed with TypeScript interfaces. Your IDE will show autocompletion for every field.
+
+### Battle / PK example
+
+```typescript
+import { TikTokLive } from 'tiktok-live-api';
+
+const client = new TikTokLive({ uniqueId: 'creator_username', apiKey: 'tk_...' });
+
+client.on('battle', e => console.log('PK', e.status, e.battleId, 'duration=', e.battleDuration));
+
+client.on('battleArmies', e => {
+  console.log('Countdown:', e.secsRemaining, 's');
+  for (const host of e.hosts ?? []) {
+    console.log(`@${host.hostUserId} team total=${host.teamTotalScore}`);
+    const mvp = host.contributors[0];
+    if (mvp) console.log(`  MVP @${mvp.nickname} score=${mvp.score}`);
+  }
+});
+
+client.on('battleItemCard', e => {
+  if (e.multiplier > 0) console.log(`x${e.multiplier} booster from @${e.senderUniqueId}`);
+  else console.log(`Effect ${e.effect} from @${e.senderUniqueId} (${e.durationSec}s)`);
+});
+
+await client.connect();
+```
+
 
 ## Live Captions (Speech-to-Text)
 
