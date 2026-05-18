@@ -61,11 +61,66 @@ export interface RoomUserSeqEvent {
   topViewers: TikTokUser[];
 }
 
-/** Payload for `battle` events. */
+/** Payload for `battle` events (PK start / end / countdown). */
 export interface BattleEvent {
   type: string;
+  battleId: string;
+  /** 1=ACTIVE, 2=STARTING, 3=ENDED, 4=PREPARING */
+  status: number;
+  battleDuration: number;
   teams: Array<Record<string, unknown>>;
   scores: number[];
+}
+
+/** One host on a battle side — present per-host in multi-guest PK. */
+export interface BattleHost {
+  hostUserId: string;
+  teamTotalScore: number;
+  teamIdx: number;
+  /** Sorted MVP first (highest score → lowest). */
+  contributors: BattleContributor[];
+}
+
+export interface BattleContributor {
+  userId: string;
+  score: number;
+  nickname: string;
+}
+
+/** Payload for `battleArmies` events — score updates during PK. */
+export interface BattleArmiesEvent {
+  battleId: string;
+  /** 1=ACTIVE, 2=STARTING, 3=ENDED, 4=PREPARING */
+  status: number;
+  teams: Array<Record<string, unknown>>;
+  matchId?: string;
+  sessionId?: string;
+  startedAtMs?: number;
+  serverTsMs?: number;
+  sessionTag?: string;
+  durationSec?: number;
+  secsRemaining?: number;
+  /** Per-host breakdown with MVP contributors. */
+  hosts?: BattleHost[];
+}
+
+/** Payload for `battleItemCard` events — multipliers (x2/x3), gloves, mist, etc. */
+export interface BattleItemCardEvent {
+  battleId: string;
+  cardType: number;
+  /** 'gloves' | 'mist' | 'booster_x2' | 'booster_x3' | 'match_guide' |
+   *  'thunder' | 'extra_time' | raw resource key. */
+  effect: string;
+  effectKey: string;
+  /** 2 or 3 for booster_x2/x3, otherwise 0. */
+  multiplier: number;
+  senderUserId: string;
+  senderNickname: string;
+  senderUniqueId: string;
+  activatedAtSec: number;
+  durationSec: number;
+  endsAtSec: number;
+  commentTemplate: string;
 }
 
 /** Payload for `roomPin` (starred/pinned message) events. */
@@ -138,6 +193,8 @@ export interface TikTokLiveEventMap {
   subscribe: SocialEvent;
   roomUserSeq: RoomUserSeqEvent;
   battle: BattleEvent;
+  battleArmies: BattleArmiesEvent;
+  battleItemCard: BattleItemCardEvent;
   roomPin: RoomPinEvent;
   envelope: Record<string, unknown>;
   streamEnd: Record<string, unknown>;
