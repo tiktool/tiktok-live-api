@@ -381,9 +381,16 @@ client.on('gift', (event: GiftEvent) => {
 | Tier | Requests/Day | WebSocket Connections | Price |
 |------|-------------|----------------------|-------|
 | Sandbox | 50 | 1 (5 min) | Free |
-| Basic | 10,000 | 3 (8h) | $7/week |
-| Pro | 75,000 | 50 (8h) | $15/week |
-| Ultra | 300,000 | 500 (8h) | $45/week |
+| Basic | 10,000 | 3 (8h) | $9/wk +tax |
+| Pro | 75,000 | 50 (8h) | $19/wk +tax |
+| Ultra | 300,000 | 250 (8h) | $58/wk +tax |
+
+Full plan details at [tik.tools/pricing](https://tik.tools/pricing). Highlights:
+
+- **Sandbox** ($0): 50 req/day · 1 WS (5 min limit) · basic endpoints · signatures included
+- **Basic** ($9/wk): 10K req/day · 3 WS · all endpoints · 1 AI caption stream
+- **Pro** ($19/wk, **most popular**): 75K req/day · 50 WS · all endpoints · 5 AI caption streams · priority routing · chat support
+- **Ultra** ($58/wk): 300K req/day · 250 WS · 20 AI caption streams · **League Rankings API** (Ultra only) · 99.5% uptime SLA · priority chat support
 
 ## Also Available
 
