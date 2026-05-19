@@ -117,10 +117,17 @@ export interface BattleItemCardEvent {
   senderUserId: string;
   senderNickname: string;
   senderUniqueId: string;
+  senderAvatarUrl: string;
   activatedAtSec: number;
   durationSec: number;
   endsAtSec: number;
   commentTemplate: string;
+  /** Full TikTok CDN URL for the card art (webp/jpeg). */
+  iconUrl: string;
+  /** Short identifier e.g. 'card_mist_v3' / 'card_crit_v3' / 'top3_buffer'. */
+  iconKey: string;
+  /** Hex e.g. '#BCD9E0' (mist blue), '#E0D4BC' (gloves tan). */
+  accentColor: string;
 }
 
 /** Payload for `roomPin` (starred/pinned message) events. */
