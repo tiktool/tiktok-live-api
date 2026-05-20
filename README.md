@@ -12,7 +12,6 @@
 [![npm downloads](https://img.shields.io/npm/dm/tiktok-live-api)](https://www.npmjs.com/package/tiktok-live-api)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue)](https://www.typescriptlang.org/)
 [![License](https://img.shields.io/npm/l/tiktok-live-api)](https://github.com/tiktool/tiktok-live-api/blob/main/LICENSE)
-[![Discord](https://img.shields.io/discord/1482387222912172159?logo=discord&label=Discord&color=5865F2)](https://discord.gg/y8TwuFBAmD)
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/tiktool/tiktok-live-api/main/tiktok-live-api.gif" alt="TikTok Live API Demo — real-time chat, gifts, and viewer events" width="700">
