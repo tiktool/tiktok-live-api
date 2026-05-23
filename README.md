@@ -66,14 +66,14 @@ That's it. **No complex setup, no protobuf, no reverse engineering, no breakages
 
 ---
 
-## 🚀 Try It Now — 5-Minute Live Demo
+## 🚀 Try It Now — Live Demo
 
-Copy-paste this into a file and run it. Connects to a live TikTok stream, prints every event for 5 minutes, then exits. Works on the free Sandbox tier.
+Copy-paste this into a file and run it. Connects to a live TikTok stream and prints every event in real time. Works on the free Community tier — no time limit, runs as long as the stream is live.
 
 **Save as `demo.mjs` and run with `node demo.mjs`:**
 
 ```javascript
-// demo.mjs — TikTok LIVE in 5 minutes
+// demo.mjs — TikTok LIVE in real time
 // npm install tiktok-live-api
 import { TikTokLive } from 'tiktok-live-api';
 
@@ -90,11 +90,11 @@ client.on('member',      e => { events++; console.log(`👋 ${e.user.uniqueId} j
 client.on('follow',      e => { events++; console.log(`➕ ${e.user.uniqueId} followed`); });
 client.on('roomUserSeq', e => { events++; console.log(`👀 Viewers: ${e.viewerCount}`); });
 
-client.on('connected',    () => console.log(`\n✅ Connected to @${LIVE_USERNAME} — listening for 5 min...\n`));
-client.on('disconnected', () => console.log(`\n📊 Done! Received ${events} events.\n`));
+client.on('connected',    () => console.log(`\n✅ Connected to @${LIVE_USERNAME} — streaming events...\n`));
+client.on('disconnected', () => console.log(`\n📊 Disconnected. Received ${events} events.\n`));
 
 client.connect();
-setTimeout(() => { client.disconnect(); }, 300_000);
+// Press Ctrl+C to stop. Community tier has no per-connection time limit.
 ```
 
 <details>
@@ -111,7 +111,7 @@ const LIVE_USERNAME = 'tv_asahi_news';
 const ws = new WebSocket(`wss://api.tik.tools?uniqueId=${LIVE_USERNAME}&apiKey=${API_KEY}`);
 let events = 0;
 
-ws.on('open', () => console.log(`\n✅ Connected to @${LIVE_USERNAME} — listening for 5 min...\n`));
+ws.on('open', () => console.log(`\n✅ Connected to @${LIVE_USERNAME} — streaming events...\n`));
 ws.on('message', (raw) => {
   const msg = JSON.parse(raw);
   events++;
@@ -127,9 +127,8 @@ ws.on('message', (raw) => {
     default:            console.log(`📦 ${msg.event}`); break;
   }
 });
-ws.on('close', () => console.log(`\n📊 Done! Received ${events} events.\n`));
-
-setTimeout(() => ws.close(), 300_000);
+ws.on('close', () => console.log(`\n📊 Disconnected. Received ${events} events.\n`));
+// Press Ctrl+C to stop. Community tier has no per-connection time limit.
 ```
 
 </details>
@@ -152,7 +151,7 @@ client.connect();
 2. Sign up (no credit card required)
 3. Copy your API key
 
-The free Sandbox tier gives you 50 requests/day and 1 WebSocket connection.
+The free **Community** tier gives you 2,500 requests/day and 15 WebSocket connections with no per-connection time limit. Forever free.
 
 ## Environment Variable
 
@@ -372,7 +371,7 @@ client.on('gift', (event: GiftEvent) => {
 | **Maintenance** | ✓ Zero — we handle it | ✗ You fix breakages | ✗ You fix breakages |
 | **CAPTCHA Solving** | ✓ Built-in (Pro+) | ✗ | ✗ |
 | **Feed Discovery** | ✓ See who's live | ✗ | ✗ |
-| **Free Tier** | ✓ 50 requests/day | ✓ Free (unreliable) | ✓ Free (unreliable) |
+| **Free Tier** | ✓ 2,500 req/day, 15 WS, no time limit | ✓ Free (unreliable) | ✓ Free (unreliable) |
 | **ESM + CJS** | ✓ Both supported | ✓ | N/A |
 
 ## Pricing
