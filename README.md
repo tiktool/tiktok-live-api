@@ -379,17 +379,36 @@ client.on('gift', (event: GiftEvent) => {
 
 | Tier | Requests/Day | WebSocket Connections | Price |
 |------|-------------|----------------------|-------|
-| Sandbox | 50 | 1 (5 min) | Free |
-| Basic | 10,000 | 3 (8h) | $9/wk +tax |
-| Pro | 75,000 | 50 (8h) | $19/wk +tax |
-| Ultra | 300,000 | 250 (8h) | $58/wk +tax |
+| Community | 2,500 | 15 (no time limit) | Free forever |
+| Pro | 75,000 | 50 (8h) | from $59/mo +tax |
+| Ultra | 300,000 | 250 (8h) | from $219/mo +tax |
+| **Global Agency** | 300,000 | 500 (8h) + Firehose | $549/mo +tax |
 
 Full plan details at [tik.tools/pricing](https://tik.tools/pricing). Highlights:
 
-- **Sandbox** ($0): 50 req/day · 1 WS (5 min limit) · basic endpoints · signatures included
-- **Basic** ($9/wk): 10K req/day · 3 WS · all endpoints · 1 AI caption stream
-- **Pro** ($19/wk, **most popular**): 75K req/day · 50 WS · all endpoints · 5 AI caption streams · priority routing · chat support
-- **Ultra** ($58/wk): 300K req/day · 250 WS · 20 AI caption streams · **League Rankings API** (Ultra only) · 99.5% uptime SLA · priority chat support
+- **Community** ($0 forever): 2,500 req/day · 15 WS · no time limit · masked leaderboards. Designed for devs building apps — upgrade when you need real usernames. No datacenter proxies; calls must come from your own IP.
+- **Pro** (monthly): 75K req/day · 50 WS · unmasked leaderboards · CAPTCHA Solver · Feed Discovery · 5 AI caption streams · priority routing · chat support
+- **Ultra** (monthly): 300K req/day · 250 WS · 20 AI caption streams · **League Rankings API** unmasked · 99.5% uptime SLA · priority chat support
+- **Global Agency** ($549/mo): Everything in Ultra + **Live Gifter Firehose WS** (region/league/global filters, min-diamond threshold) + VIP Telegram alerts + VIP Web Vault (unmasked historical visual access)
+
+### Live Gifter Firehose — Global Agency
+
+Real-time gift event stream from our Dragonfly fan-out. Filter by region, league, or globally; cap by minimum diamond threshold. Mid-stream filter updates supported via `update_filter` frame, no reconnect needed.
+
+```js
+const ws = new WebSocket(
+  `wss://api.tik.tools/firehose/gifters?apiKey=${KEY}&mode=region&region=US%2B&min_diamonds=1000`
+)
+ws.on('message', (raw) => {
+  const evt = JSON.parse(raw)
+  // evt: { type:'gifter_alert', ts, gifter:{username,displayName,isAnonymous},
+  //        creator:{uniqueId}, gift:{name,totalDiamonds}, region }
+})
+// Update filter without reconnect
+ws.send(JSON.stringify({ type: 'update_filter', mode: 'global', min_diamonds: 5000 }))
+```
+
+Modes: `global` (all regions), `region` (single region code), `league` (region + league class, e.g. `B2`).
 
 ## Also Available
 
