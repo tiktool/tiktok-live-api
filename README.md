@@ -68,7 +68,7 @@ That's it. **No complex setup, no protobuf, no reverse engineering, no breakages
 
 ## 🚀 Try It Now — Live Demo
 
-Copy-paste this into a file and run it. Connects to a live TikTok stream and prints every event in real time. Works on the free Community tier — no time limit, runs as long as the stream is live.
+Copy-paste this into a file and run it. Connects to a live TikTok stream and prints every event in real time. Works on the free Community tier — 2 hours per WebSocket connection.
 
 **Save as `demo.mjs` and run with `node demo.mjs`:**
 
@@ -94,7 +94,7 @@ client.on('connected',    () => console.log(`\n✅ Connected to @${LIVE_USERNAME
 client.on('disconnected', () => console.log(`\n📊 Disconnected. Received ${events} events.\n`));
 
 client.connect();
-// Press Ctrl+C to stop. Community tier has no per-connection time limit.
+// Press Ctrl+C to stop. Community tier caps each WebSocket at 2 hours.
 ```
 
 <details>
@@ -128,7 +128,7 @@ ws.on('message', (raw) => {
   }
 });
 ws.on('close', () => console.log(`\n📊 Disconnected. Received ${events} events.\n`));
-// Press Ctrl+C to stop. Community tier has no per-connection time limit.
+// Press Ctrl+C to stop. Community tier caps each WebSocket at 2 hours.
 ```
 
 </details>
@@ -151,7 +151,7 @@ client.connect();
 2. Sign up (no credit card required)
 3. Copy your API key
 
-The free **Community** tier gives you 2,500 requests/day and 15 WebSocket connections with no per-connection time limit. Forever free.
+The free **Community** tier gives you 2,500 requests/day and 15 WebSocket connections (2 hours per connection). Forever free.
 
 ## Environment Variable
 
@@ -371,21 +371,21 @@ client.on('gift', (event: GiftEvent) => {
 | **Maintenance** | ✓ Zero — we handle it | ✗ You fix breakages | ✗ You fix breakages |
 | **CAPTCHA Solving** | ✓ Built-in (Pro+) | ✗ | ✗ |
 | **Feed Discovery** | ✓ See who's live | ✗ | ✗ |
-| **Free Tier** | ✓ 2,500 req/day, 15 WS, no time limit | ✓ Free (unreliable) | ✓ Free (unreliable) |
+| **Free Tier** | ✓ 2,500 req/day, 15 WS, 2h per WS | ✓ Free (unreliable) | ✓ Free (unreliable) |
 | **ESM + CJS** | ✓ Both supported | ✓ | N/A |
 
 ## Pricing
 
 | Tier | Requests/Day | WebSocket Connections | Price |
 |------|-------------|----------------------|-------|
-| Community | 2,500 | 15 (no time limit) | Free forever |
-| Pro | 75,000 | 50 (8h) | from $59/mo +tax |
-| Ultra | 300,000 | 250 (8h) | from $219/mo +tax |
-| **Global Agency** | 300,000 | 500 (8h) + Firehose | $549/mo +tax |
+| Community | 2,500 | 15 (2h per WS) | Free forever |
+| Pro | 75,000 | 50 (8h per WS) | from $59/mo +tax |
+| Ultra | 300,000 | 250 (8h per WS) | from $219/mo +tax |
+| **Global Agency** | 300,000 | 500 (8h per WS) + Firehose | $549/mo +tax |
 
 Full plan details at [tik.tools/pricing](https://tik.tools/pricing). Highlights:
 
-- **Community** ($0 forever): 2,500 req/day · 15 WS · no time limit · masked leaderboards. Designed for devs building apps — upgrade when you need real usernames. No datacenter proxies; calls must come from your own IP.
+- **Community** ($0 forever): 2,500 req/day · 15 WS · 2 hours per connection · masked leaderboards. Designed for devs building apps — upgrade when you need real usernames. No datacenter proxies; calls must come from your own IP.
 - **Pro** (monthly): 75K req/day · 50 WS · unmasked leaderboards · CAPTCHA Solver · Feed Discovery · 5 AI caption streams · priority routing · chat support
 - **Ultra** (monthly): 300K req/day · 250 WS · 20 AI caption streams · **League Rankings API** unmasked · 99.5% uptime SLA · priority chat support
 - **Global Agency** ($549/mo): Everything in Ultra + **Live Gifter Firehose WS** (region/league/global filters, min-diamond threshold) + VIP Telegram alerts + VIP Web Vault (unmasked historical visual access)
