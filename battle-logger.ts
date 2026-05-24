@@ -124,7 +124,7 @@ function exploreProtoFields(buf: Uint8Array, depth: number = 0, maxDepth: number
             let value: any;
 
             if (field.wireType === 0) {
-                // Varint — show as number and also as signed (for timestamps, etc.)
+                // Varint - show as number and also as signed (for timestamps, etc.)
                 const num = Number(field.value);
                 value = { type: 'varint', value: num };
                 // If it looks like a millisecond timestamp (13+ digits), mark it
@@ -340,14 +340,14 @@ async function main() {
                         // For BattleTask messages, try to identify special events
                         if (method === 'WebcastLinkmicBattleTaskMessage' && innerPayload) {
                             entry.parsed = {
-                                note: '🔥 BATTLE TASK/SPECIAL EVENT — check rawFields for gloves/mist/x2/x3/extra time data',
+                                note: '🔥 BATTLE TASK/SPECIAL EVENT - check rawFields for gloves/mist/x2/x3/extra time data',
                             };
                         }
 
                         // For Barrage messages
                         if (method === 'WebcastBarrageMessage' && innerPayload) {
                             entry.parsed = {
-                                note: '🎆 BARRAGE EVENT — may contain gloves/effects/multipliers',
+                                note: '🎆 BARRAGE EVENT - may contain gloves/effects/multipliers',
                             };
                         }
 
@@ -360,12 +360,12 @@ async function main() {
 
                     // Also log ANY message type we haven't seen before (discovery)
                     if (!BATTLE_MESSAGE_TYPES.has(method) && ALL_SEEN_TYPES.get(method) === 1) {
-                        // First time seeing this type — log a sample
+                        // First time seeing this type - log a sample
                         const entry: any = {
                             timestamp: new Date().toISOString(),
                             messageNumber: messageCount,
                             method,
-                            note: 'FIRST_OCCURRENCE — sample capture of unknown message type',
+                            note: 'FIRST_OCCURRENCE - sample capture of unknown message type',
                         };
 
                         if (innerPayload && innerPayload.length < 10000) {
@@ -412,13 +412,13 @@ async function main() {
 
     // Auto-stop after duration
     const stopTimer = setTimeout(async () => {
-        console.log(`\n\n⏱️  ${durationMinutes} minutes elapsed — stopping...`);
+        console.log(`\n\n⏱️  ${durationMinutes} minutes elapsed - stopping...`);
         await shutdown();
     }, durationMs);
 
     // Handle Ctrl+C
     process.on('SIGINT', async () => {
-        console.log('\n\n🛑 Interrupted — stopping...');
+        console.log('\n\n🛑 Interrupted - stopping...');
         clearTimeout(stopTimer);
         await shutdown();
     });

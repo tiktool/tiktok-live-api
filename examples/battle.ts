@@ -1,5 +1,5 @@
 /**
- * Battle / PK example — listens for battle start, live armies score updates
+ * Battle / PK example - listens for battle start, live armies score updates
  * (with per-host MVP), and item-card effects (boosters, gloves, mist).
  *
  * Usage:
@@ -54,4 +54,4 @@ client.on('disconnected', e => console.log(`Disconnected: @${e.uniqueId}`));
 client.on('error', e => console.error('Error:', e.error));
 
 await client.connect();
-console.log('Listening for battle events… Ctrl+C to stop.');
+console.log('Listening for battle events... Ctrl+C to stop.');

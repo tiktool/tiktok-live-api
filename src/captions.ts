@@ -1,8 +1,8 @@
 /**
- * TikTokCaptions — Real-time AI speech-to-text for TikTok LIVE streams.
+ * TikTokCaptions - Real-time AI speech-to-text for TikTok LIVE streams.
  *
  * Transcribe and translate any TikTok LIVE stream in real-time.
- * This feature is unique to TikTool Live — no other service offers it.
+ * This feature is unique to TikTool Live - no other service offers it.
  *
  * @example
  * ```typescript

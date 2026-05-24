@@ -1,5 +1,5 @@
 /**
- * Live Captions example — transcribe and translate a TikTok LIVE stream.
+ * Live Captions example - transcribe and translate a TikTok LIVE stream.
  *
  * Usage:
  *   TIKTOOL_API_KEY=your_key TIKTOK_USERNAME=streamer npx tsx captions.ts

@@ -6,7 +6,7 @@
 
 > 📖 **Full documentation, guides, and dashboard → [tik.tools](https://tik.tools)** &nbsp;|&nbsp; 🐍 **Python SDK → [tik.tools/guides/python-tiktok-live](https://tik.tools/guides/python-tiktok-live)** &nbsp;|&nbsp; 🔌 **WebSocket API → [tik.tools/websocket](https://tik.tools/websocket)**
 
-**Unofficial TikTok LIVE API Client for Node.js & TypeScript** — Connect to any TikTok LIVE stream and receive real-time chat messages, gifts, likes, follows, viewer counts, battles, and more. Includes AI-powered live captions (speech-to-text). Powered by the [TikTool](https://tik.tools) managed API.
+**Unofficial TikTok LIVE API Client for Node.js & TypeScript** - Connect to any TikTok LIVE stream and receive real-time chat messages, gifts, likes, follows, viewer counts, battles, and more. Includes AI-powered live captions (speech-to-text). Powered by the [TikTool](https://tik.tools) managed API.
 
 [![npm](https://img.shields.io/npm/v/tiktok-live-api)](https://www.npmjs.com/package/tiktok-live-api)
 [![npm downloads](https://img.shields.io/npm/dm/tiktok-live-api)](https://www.npmjs.com/package/tiktok-live-api)
@@ -14,10 +14,10 @@
 [![License](https://img.shields.io/npm/l/tiktok-live-api)](https://github.com/tiktool/tiktok-live-api/blob/main/LICENSE)
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/tiktool/tiktok-live-api/main/tiktok-live-api.gif" alt="TikTok Live API Demo — real-time chat, gifts, and viewer events" width="700">
+  <img src="https://raw.githubusercontent.com/tiktool/tiktok-live-api/main/tiktok-live-api.gif" alt="TikTok Live API Demo - real-time chat, gifts, and viewer events" width="700">
 </p>
 
-> This package is **not affiliated with or endorsed by TikTok**. It connects to the [TikTool Live](https://tik.tools) managed API service — 99.9% uptime, no reverse engineering, no maintenance required. Also available for [Python](https://pypi.org/project/tiktok-live-api/) and [any language via WebSocket](https://tik.tools/docs).
+> This package is **not affiliated with or endorsed by TikTok**. It connects to the [TikTool Live](https://tik.tools) managed API service - 99.9% uptime, no reverse engineering, no maintenance required. Also available for [Python](https://pypi.org/project/tiktok-live-api/) and [any language via WebSocket](https://tik.tools/docs).
 
 ## Install
 
@@ -66,14 +66,14 @@ That's it. **No complex setup, no protobuf, no reverse engineering, no breakages
 
 ---
 
-## 🚀 Try It Now — Live Demo
+## 🚀 Try It Now - Live Demo
 
-Copy-paste this into a file and run it. Connects to a live TikTok stream and prints every event in real time. Works on the free Community tier — 2 hours per WebSocket connection.
+Copy-paste this into a file and run it. Connects to a live TikTok stream and prints every event in real time. Works on the free Community tier - 2 hours per WebSocket connection.
 
 **Save as `demo.mjs` and run with `node demo.mjs`:**
 
 ```javascript
-// demo.mjs — TikTok LIVE in real time
+// demo.mjs - TikTok LIVE in real time
 // npm install tiktok-live-api
 import { TikTokLive } from 'tiktok-live-api';
 
@@ -90,7 +90,7 @@ client.on('member',      e => { events++; console.log(`👋 ${e.user.uniqueId} j
 client.on('follow',      e => { events++; console.log(`➕ ${e.user.uniqueId} followed`); });
 client.on('roomUserSeq', e => { events++; console.log(`👀 Viewers: ${e.viewerCount}`); });
 
-client.on('connected',    () => console.log(`\n✅ Connected to @${LIVE_USERNAME} — streaming events...\n`));
+client.on('connected',    () => console.log(`\n✅ Connected to @${LIVE_USERNAME} - streaming events...\n`));
 client.on('disconnected', () => console.log(`\n📊 Disconnected. Received ${events} events.\n`));
 
 client.connect();
@@ -101,7 +101,7 @@ client.connect();
 <summary><strong>🔌 Pure WebSocket version (no SDK, any language)</strong></summary>
 
 ```javascript
-// ws-demo.mjs — Pure WebSocket, zero SDK
+// ws-demo.mjs - Pure WebSocket, zero SDK
 // npm install ws
 import WebSocket from 'ws';
 
@@ -111,7 +111,7 @@ const LIVE_USERNAME = 'tv_asahi_news';
 const ws = new WebSocket(`wss://api.tik.tools?uniqueId=${LIVE_USERNAME}&apiKey=${API_KEY}`);
 let events = 0;
 
-ws.on('open', () => console.log(`\n✅ Connected to @${LIVE_USERNAME} — streaming events...\n`));
+ws.on('open', () => console.log(`\n✅ Connected to @${LIVE_USERNAME} - streaming events...\n`));
 ws.on('message', (raw) => {
   const msg = JSON.parse(raw);
   events++;
@@ -190,7 +190,7 @@ client.connect();
 | `subscribe` | New subscriber | `user` |
 | `roomUserSeq` | Viewer count | `viewerCount`, `topViewers` |
 | `battle` | PK start / end / status change | `battleId`, `status` (1=ACTIVE / 2=STARTING / 3=ENDED / 4=PREPARING), `battleDuration`, `teams` |
-| `battleArmies` | Live PK score update | `battleId`, `status`, `matchId`, `sessionId`, `durationSec`, `secsRemaining`, `hosts[]` — each host has `teamTotalScore` + `contributors[]` (MVP first) |
+| `battleArmies` | Live PK score update | `battleId`, `status`, `matchId`, `sessionId`, `durationSec`, `secsRemaining`, `hosts[]` - each host has `teamTotalScore` + `contributors[]` (MVP first) |
 | `battleItemCard` | Booster multipliers, gloves, mist, match-guide, thunder, extra-time | `effect` (`'gloves'` / `'mist'` / `'booster_x2'` / `'booster_x3'` / `'match_guide'` / ...), `multiplier` (2 or 3), `senderUserId`, `senderNickname`, `activatedAtSec`, `durationSec`, `endsAtSec`, `commentTemplate` |
 | `roomPin` | Pinned/starred message | `user`, `comment`, `action`, `durationSeconds` |
 | `envelope` | Treasure chest | `diamonds`, `user` |
@@ -231,7 +231,7 @@ await client.connect();
 
 ## Live Captions (Speech-to-Text)
 
-Transcribe and translate any TikTok LIVE stream in real-time. **This feature is unique to TikTool Live — no other TikTok library offers it.**
+Transcribe and translate any TikTok LIVE stream in real-time. **This feature is unique to TikTool Live - no other TikTok library offers it.**
 
 ```typescript
 import { TikTokCaptions } from 'tiktok-live-api';
@@ -291,7 +291,7 @@ client.on('chat', (event) => {
       .sort((a, b) => b[1] - a[1])
       .slice(0, 5);
     top.forEach(([name, diamonds], i) => {
-      console.log(`  ${i + 1}. ${name} — ${diamonds} 💎`);
+      console.log(`  ${i + 1}. ${name} - ${diamonds} 💎`);
     });
   }
 });
@@ -314,7 +314,7 @@ import { TikTokLive, ChatEvent, GiftEvent } from 'tiktok-live-api';
 
 const client = new TikTokLive('streamer', { apiKey: 'KEY' });
 
-// Full autocompletion — your IDE knows the type of `event`
+// Full autocompletion - your IDE knows the type of `event`
 client.on('chat', (event: ChatEvent) => {
   console.log(event.user.uniqueId);  // ✓ typed
   console.log(event.comment);        // ✓ typed
@@ -337,12 +337,12 @@ client.on('gift', (event: GiftEvent) => {
 | `maxReconnectAttempts` | `number` | `5` | Max reconnection attempts |
 
 **Methods:**
-- `client.on(event, handler)` — Register event handler
-- `client.off(event, handler)` — Remove event handler
-- `client.connect()` — Connect to stream (returns Promise)
-- `client.disconnect()` — Disconnect from stream
-- `client.connected` — Whether currently connected
-- `client.eventCount` — Total events received
+- `client.on(event, handler)` - Register event handler
+- `client.off(event, handler)` - Remove event handler
+- `client.connect()` - Connect to stream (returns Promise)
+- `client.disconnect()` - Disconnect from stream
+- `client.connected` - Whether currently connected
+- `client.eventCount` - Total events received
 
 ### `new TikTokCaptions(uniqueId, options?)`
 
@@ -354,11 +354,11 @@ client.on('gift', (event: GiftEvent) => {
 | `maxDurationMinutes` | `number` | `60` | Auto-disconnect timer |
 
 **Methods:**
-- `captions.on(event, handler)` — Register event handler
-- `captions.off(event, handler)` — Remove event handler
-- `captions.connect()` — Start receiving captions (returns Promise)
-- `captions.disconnect()` — Stop receiving captions
-- `captions.connected` — Whether currently connected
+- `captions.on(event, handler)` - Register event handler
+- `captions.off(event, handler)` - Remove event handler
+- `captions.connect()` - Start receiving captions (returns Promise)
+- `captions.disconnect()` - Stop receiving captions
+- `captions.connected` - Whether currently connected
 
 ## Why tiktok-live-api?
 
@@ -368,7 +368,7 @@ client.on('gift', (event: GiftEvent) => {
 | **TypeScript** | ✓ First-class, fully typed | Partial | N/A |
 | **Live Captions** | ✓ AI speech-to-text | ✗ | ✗ |
 | **Translation** | ✓ Real-time, 50+ languages | ✗ | ✗ |
-| **Maintenance** | ✓ Zero — we handle it | ✗ You fix breakages | ✗ You fix breakages |
+| **Maintenance** | ✓ Zero - we handle it | ✗ You fix breakages | ✗ You fix breakages |
 | **CAPTCHA Solving** | ✓ Built-in (Pro+) | ✗ | ✗ |
 | **Feed Discovery** | ✓ See who's live | ✗ | ✗ |
 | **Free Tier** | ✓ 2,500 req/day, 15 WS, 2h per WS | ✓ Free (unreliable) | ✓ Free (unreliable) |
@@ -385,12 +385,12 @@ client.on('gift', (event: GiftEvent) => {
 
 Full plan details at [tik.tools/pricing](https://tik.tools/pricing). Highlights:
 
-- **Community** ($0 forever): 2,500 req/day · 15 WS · 2 hours per connection · masked leaderboards. Designed for devs building apps — upgrade when you need real usernames. No datacenter proxies; calls must come from your own IP.
+- **Community** ($0 forever): 2,500 req/day · 15 WS · 2 hours per connection · masked leaderboards. Designed for devs building apps - upgrade when you need real usernames. No datacenter proxies; calls must come from your own IP.
 - **Pro** (monthly): 75K req/day · 50 WS · unmasked leaderboards · CAPTCHA Solver · Feed Discovery · 5 AI caption streams · priority routing · chat support
 - **Ultra** (monthly): 300K req/day · 250 WS · 20 AI caption streams · **League Rankings API** unmasked · 99.5% uptime SLA · priority chat support
 - **Global Agency** ($549/mo): Everything in Ultra + **Live Gifter Firehose WS** (region/league/global filters, min-diamond threshold) + VIP Telegram alerts + VIP Web Vault (unmasked historical visual access)
 
-### Live Gifter Firehose — Global Agency
+### Live Gifter Firehose - Global Agency
 
 Real-time gift event stream from our Dragonfly fan-out. Filter by region, league, or globally; cap by minimum diamond threshold. Mid-stream filter updates supported via `update_filter` frame, no reconnect needed.
 
