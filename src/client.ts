@@ -1,5 +1,5 @@
 /**
- * TikTokLive — Connect to any TikTok LIVE stream via WebSocket.
+ * TikTokLive - Connect to any TikTok LIVE stream via WebSocket.
  *
  * Receives real-time events: chat messages, gifts, likes, follows,
  * viewer counts, battles, and more. Powered by the TikTool managed API.

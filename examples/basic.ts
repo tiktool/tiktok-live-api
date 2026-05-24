@@ -1,5 +1,5 @@
 /**
- * Basic example — connect to a TikTok LIVE stream and print all events.
+ * Basic example - connect to a TikTok LIVE stream and print all events.
  *
  * Usage:
  *   TIKTOOL_API_KEY=your_key TIKTOK_USERNAME=streamer npx tsx basic.ts

@@ -72,7 +72,7 @@ export interface BattleEvent {
   scores: number[];
 }
 
-/** One host on a battle side — present per-host in multi-guest PK. */
+/** One host on a battle side - present per-host in multi-guest PK. */
 export interface BattleHost {
   hostUserId: string;
   teamTotalScore: number;
@@ -87,7 +87,7 @@ export interface BattleContributor {
   nickname: string;
 }
 
-/** Payload for `battleArmies` events — score updates during PK. */
+/** Payload for `battleArmies` events - score updates during PK. */
 export interface BattleArmiesEvent {
   battleId: string;
   /** 1=ACTIVE, 2=STARTING, 3=ENDED, 4=PREPARING */
@@ -104,7 +104,7 @@ export interface BattleArmiesEvent {
   hosts?: BattleHost[];
 }
 
-/** Payload for `battleItemCard` events — multipliers (x2/x3), gloves, mist, etc. */
+/** Payload for `battleItemCard` events - multipliers (x2/x3), gloves, mist, etc. */
 export interface BattleItemCardEvent {
   battleId: string;
   cardType: number;

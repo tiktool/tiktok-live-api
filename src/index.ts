@@ -1,5 +1,5 @@
 /**
- * tiktok-live-api — TikTok LIVE stream data client for Node.js & TypeScript.
+ * tiktok-live-api - TikTok LIVE stream data client for Node.js & TypeScript.
  *
  * Connect to any TikTok LIVE stream and receive real-time events:
  * chat messages, gifts, likes, follows, viewer counts, battles, and more.

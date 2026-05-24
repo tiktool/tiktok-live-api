@@ -1,5 +1,5 @@
 /**
- * Chat Bot example — simple bot with commands and gift leaderboard.
+ * Chat Bot example - simple bot with commands and gift leaderboard.
  *
  * Usage:
  *   TIKTOOL_API_KEY=your_key TIKTOK_USERNAME=streamer npx tsx chat-bot.ts
@@ -31,7 +31,7 @@ client.on('chat', (event) => {
       .sort((a, b) => b[1] - a[1])
       .slice(0, 5);
     top.forEach(([name, diamonds], i) => {
-      console.log(`  ${i + 1}. ${name} — ${diamonds} 💎`);
+      console.log(`  ${i + 1}. ${name} - ${diamonds} 💎`);
     });
   }
 });
