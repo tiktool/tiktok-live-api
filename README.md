@@ -389,7 +389,7 @@ client.on('gift', (event: GiftEvent) => {
 | Community | 2,500 | 15 (2h per WS) | Free forever |
 | Pro | 75,000 | 50 (8h per WS) | from $19/wk +tax |
 | Ultra | 300,000 | 250 (8h per WS) | from $69/wk +tax |
-| **Global Agency** | 300,000 | 500 (8h per WS) + Firehose | $149/wk or $549/mo +tax |
+| **Global Agency** | 300,000 | 250 (8h per WS) + Firehose | $149/wk or $549/mo +tax |
 
 Full plan details at [tik.tools/pricing](https://tik.tools/pricing). Highlights:
 
