@@ -364,12 +364,19 @@ client.on('gift', (event: GiftEvent) => {
 
 | | tiktok-live-api | tiktok-live-connector | TikTokLive (Python) |
 |---|---|---|---|
-| **Type** | Managed API + SDK | Self-hosted client | Self-hosted client |
+| **Type** | Managed agency-grade platform | Self-hosted client | Self-hosted client |
 | **Hosting** | ✓ Fully managed, 99.9% uptime | You run the client; signing via paid backend | You run the client; signing via paid backend |
 | **TypeScript** | ✓ First-class, fully typed | ✓ Typed | N/A (Python) |
-| **Live Captions (AI STT)** | ✓ Built-in | ✗ | ✗ |
-| **Translation** | ✓ Real-time, 50+ languages | ✗ | ✗ |
+| **AI Live Captions (STT + translation)** | ✓ 60+ languages | ✗ | ✗ |
 | **Unreal Engine plugin** | ✓ | ✗ | ✗ |
+| **Gifter Intel (LTV, archetypes)** | ✓ | ✗ | ✗ |
+| **Historical Leaderboards** | ✓ Regional + global | ✗ | ✗ |
+| **Battle History + Per-Match Timeline** | ✓ | ✗ | ✗ |
+| **League Rankings (Diamond Rush)** | ✓ | ✗ | ✗ |
+| **Real-time Discord + Telegram Alerts** | ✓ | ✗ | ✗ |
+| **Sniper Gap (live battle tracker)** | ✓ | ✗ | ✗ |
+| **Agency CRM + Watchlists** | ✓ | ✗ | ✗ |
+| **Public Profile Pages (creator + gifter)** | ✓ Indexed | ✗ | ✗ |
 | **CAPTCHA Solving** | ✓ Built-in (Pro+) | Via signing backend | Via signing backend |
 | **Feed Discovery** | ✓ See who's live | ✗ | ✗ |
 | **Free Tier** | ✓ 2,500 req/day, 15 WS, 2h per WS | ✓ MIT-licensed | ✓ MIT-licensed |
