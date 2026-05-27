@@ -370,7 +370,7 @@ client.on('gift', (event: GiftEvent) => {
 | **AI Live Captions (STT + translation)** | ✓ 60+ languages | ✗ | ✗ |
 | **Unreal Engine plugin** | ✓ | ✗ | ✗ |
 | **Gifter Intel (LTV, archetypes)** | ✓ | ✗ | ✗ |
-| **Historical Leaderboards** | ✓ Regional + global | ✗ | ✗ |
+| **Live Leaderboards (real-time)** | ✓ Regional + global | ✗ | ✗ |
 | **Battle History + Per-Match Timeline** | ✓ | ✗ | ✗ |
 | **League Rankings (Diamond Rush)** | ✓ | ✗ | ✗ |
 | **Real-time Discord + Telegram Alerts** | ✓ | ✗ | ✗ |
