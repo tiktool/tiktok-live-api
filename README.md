@@ -364,15 +364,16 @@ client.on('gift', (event: GiftEvent) => {
 
 | | tiktok-live-api | tiktok-live-connector | TikTokLive (Python) |
 |---|---|---|---|
-| **Stability** | ✓ Managed API, 99.9% uptime | ✗ Breaks on TikTok updates | ✗ Breaks on TikTok updates |
-| **TypeScript** | ✓ First-class, fully typed | Partial | N/A |
-| **Live Captions** | ✓ AI speech-to-text | ✗ | ✗ |
+| **Type** | Managed API + SDK | Self-hosted client | Self-hosted client |
+| **Hosting** | ✓ Fully managed, 99.9% uptime | You run the client; signing via paid backend | You run the client; signing via paid backend |
+| **TypeScript** | ✓ First-class, fully typed | ✓ Typed | N/A (Python) |
+| **Live Captions (AI STT)** | ✓ Built-in | ✗ | ✗ |
 | **Translation** | ✓ Real-time, 50+ languages | ✗ | ✗ |
-| **Maintenance** | ✓ Zero - we handle it | ✗ You fix breakages | ✗ You fix breakages |
-| **CAPTCHA Solving** | ✓ Built-in (Pro+) | ✗ | ✗ |
+| **Unreal Engine plugin** | ✓ | ✗ | ✗ |
+| **CAPTCHA Solving** | ✓ Built-in (Pro+) | Via signing backend | Via signing backend |
 | **Feed Discovery** | ✓ See who's live | ✗ | ✗ |
-| **Free Tier** | ✓ 2,500 req/day, 15 WS, 2h per WS | ✓ Free (unreliable) | ✓ Free (unreliable) |
-| **ESM + CJS** | ✓ Both supported | ✓ | N/A |
+| **Free Tier** | ✓ 2,500 req/day, 15 WS, 2h per WS | ✓ MIT-licensed | ✓ MIT-licensed |
+| **ESM + CJS** | ✓ Both supported | ✓ | N/A (Python) |
 
 ## Pricing
 
