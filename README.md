@@ -389,14 +389,14 @@ client.on('gift', (event: GiftEvent) => {
 | Community | 2,500 | 15 (2h per WS) | Free forever |
 | Pro | 75,000 | 50 (8h per WS) | from $15/wk |
 | Ultra | 300,000 | 250 (8h per WS) | from $45/wk |
-| **Global Agency** | 300,000 | 250 (8h per WS) + Firehose | $119/wk or $499/mo |
+| **Global Agency** | 300,000 | 250 (8h per WS) + Firehose | $119/wk or $399/mo |
 
 Full plan details at [tik.tools/pricing](https://tik.tools/pricing). Highlights:
 
 - **Community** ($0 forever): 2,500 req/day · 15 WS · 2 hours per connection · masked leaderboards. Designed for devs building apps - upgrade when you need real usernames. No datacenter proxies; calls must come from your own IP.
 - **Pro** ($15/wk): 75K req/day · 50 WS · unmasked leaderboards · Feed Discovery · 5 AI caption streams · priority routing · chat support
 - **Ultra** ($45/wk): 300K req/day · 250 WS · 20 AI caption streams · **League Rankings API** unmasked · 99.5% uptime SLA · priority chat support
-- **Global Agency** ($119/wk or $499/mo): Everything in Ultra + **Live Gifter Firehose WS** (region/league/global filters, min-diamond threshold) + VIP Telegram alerts + VIP Web Vault (unmasked historical visual access)
+- **Global Agency** ($119/wk or $399/mo): Everything in Ultra + **Live Gifter Firehose WS** (region/league/global filters, min-diamond threshold) + VIP Telegram alerts + VIP Web Vault (unmasked historical visual access)
 
 ### Live Gifter Firehose - Global Agency
 
