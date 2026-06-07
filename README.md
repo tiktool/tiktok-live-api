@@ -177,30 +177,114 @@ client.on('chat', (e) => console.log(e.comment));
 client.connect();
 ```
 
-## Events
+## Events (54 v3 event types)
 
-| Event | Description | Key Fields |
-|-------|-------------|------------|
-| `chat` | Chat message | `user`, `comment`, `emotes`, `starred?` |
-| `gift` | Virtual gift | `user`, `giftName`, `diamondCount`, `repeatCount` |
-| `like` | Like event | `user`, `likeCount`, `totalLikes` |
-| `follow` | New follower | `user` |
-| `share` | Stream share | `user` |
-| `member` | Viewer joined | `user` |
-| `subscribe` | New subscriber | `user` |
-| `roomUserSeq` | Viewer count | `viewerCount`, `topViewers` |
-| `battle` | PK start / end / status change | `battleId`, `status` (1=ACTIVE / 2=STARTING / 3=ENDED / 4=PREPARING), `battleDuration`, `teams` |
-| `battleArmies` | Live PK score update | `battleId`, `status`, `matchId`, `sessionId`, `durationSec`, `secsRemaining`, `hosts[]` - each host has `teamTotalScore` + `contributors[]` (MVP first) |
-| `battleItemCard` | Booster multipliers, gloves, mist, match-guide, thunder, extra-time | `effect` (`'gloves'` / `'mist'` / `'booster_x2'` / `'booster_x3'` / `'match_guide'` / ...), `multiplier` (2 or 3), `senderUserId`, `senderNickname`, `activatedAtSec`, `durationSec`, `endsAtSec`, `commentTemplate` |
-| `roomPin` | Pinned/starred message | `user`, `comment`, `action`, `durationSeconds` |
-| `envelope` | Treasure chest | `diamonds`, `user` |
-| `streamEnd` | Stream ended | `reason` |
-| `connected` | Connected | `uniqueId` |
-| `disconnected` | Disconnected | `uniqueId` |
-| `error` | Error occurred | `error` |
-| `event` | Catch-all | Full raw event |
+Every event is dispatched by name. `client.on('chat', e => ...)` is fully typed end-to-end. Each event payload extends `BaseEvent` (`type`, `timestamp`, `msgId`, optional `protoVersion: 1 | 2 | 3`).
 
-All events are fully typed with TypeScript interfaces. Your IDE will show autocompletion for every field.
+### Core live events
+
+| Event | Description |
+|---|---|
+| `connected` | WebSocket open. |
+| `disconnected` | WebSocket close. |
+| `roomInfo` | One-shot post-connect: `{ roomId, wsHost, clusterRegion, connectedAt }`. |
+| `chat` | Chat message. `user`, `comment`, `emotes`, optional `starred`. **v3** adds `language` (auto-detected ISO 639-1) + `messageUuid` (moderation correlation). |
+| `gift` | Virtual gift. `giftId`, `giftName`, `diamondCount`, `repeatCount`, `repeatEnd`, `giftType`. **v3** adds `transactionId` (dedup key), `senderUserId`, `relationship` (`joinDayNumber`, `fromUser`, `toUser`). |
+| `like` | Like batch. `likeCount`, `totalLikes`. |
+| `member` | Viewer joined. **v3** adds `actionCode`, `entrySource` (`"homepage_hot-live_cell"`, `"follow-tab"`, ...), `entryAction` (`"draw"`/`"click"`), `entryType` (`"rec"` = algorithmic). |
+| `social` | Follow / share. |
+| `roomUserSeq` | Periodic viewer count tick. |
+| `subscribe` | A viewer subscribed. |
+
+### PK / battle events
+
+| Event | Description |
+|---|---|
+| `battle` | PK lifecycle. `status` (1=ACTIVE, 2=STARTING, 3=ENDED, 4=PREPARING), `battleDuration`, `teams`. **v3** adds `extraHostUserIds`, `layoutSubtype`. |
+| `battleArmies` | Per-host MVP breakdown ticking through the PK. `hosts[].contributors[]` sorted MVP first. **v3** adds `transactionId`. |
+| `battleItemCard` | Booster card: x2 / x3 multipliers, gloves (crit), mist, thunder, extra-time, match-guide. Includes overlay assets from TikTok's CDN. |
+| `battlePunishFinish` | Loser-side punishment screen ended. |
+| `battleNotice` | PK notice (version-mismatch toast, invite-failure). |
+| `battleGameplay` | PK mini-game state (Whack-A-Mole, Tic-Tac-Toe variants). |
+| `linkLayer` | PK / link-mic negotiation (invite, cancel, accept, source change). |
+| `linkMicOpponentGift` | Per-gift breakdown from the OPPONENT side of a PK. |
+| `linkScreenChange` | PK split-screen layout flip (1v1 / 1vN / cohost mode swap). |
+| `cohostLayoutUpdate` | Cohost layout subtype change. |
+| `linkMic`, `linkMicLayoutState`, `link` | Generic link-mic envelopes. |
+| `competition`, `competitionContributor` | Cross-stream competition + per-contributor breakdown. |
+| `guestShowdown` | Guest showdown lifecycle. |
+
+### Native captions (v3)
+
+| Event | Description |
+|---|---|
+| `caption` | **NEW in v3.** TikTok native auto-captions on the LIVE WebSocket. `text`, `isFinal`, `startedAtMs`, `endsAtMs`. Independent of the operator-managed [TikTok Live Captions](https://tik.tools/captions) product. |
+
+### Creator-side events
+
+| Event | Description |
+|---|---|
+| `goalUpdate` | Stream goal progress (subscriber / gift / watch-time goals). |
+| `commentTray` | Comment tray UI state change. |
+| `roomPin` | A chat got pinned by the host or a moderator. |
+| `hostBoard` | Host leaderboard board update. |
+| `privilegeAdvance` | Viewer privilege tier-up notification with overlay assets. |
+| `anchorToolModification` | Creator modified a panel/widget. |
+| `inRoomBanner` | In-room activity banner. |
+| `roomSticker` | Room-wide sticker drop. |
+| `bottomMessage` | Bottom-bar safety / risk notice. |
+| `accessRecall`, `roomVerify` | Content-classification recheck events. |
+| `smbBoard` | SMB (small-business) board overlay. |
+| `streamStatus` | Stream status flip. |
+| `shareRevenueNotice` | Share-revenue subscriber count change. |
+| `capsule` | TikTok service-plus pin reminder. |
+| `hotRoom` | TikTok promoted the room to a high-traffic slot. |
+| `linkMicAnchorGuide` | Anchor (creator) guide nudges. |
+
+### Moderation / safety
+
+| Event | Description |
+|---|---|
+| `imDelete` | Chat moderation delete. Correlate via `chat.messageUuid` (v3). |
+| `unauthorizedMember` | Unauthorized viewer hit a gated feature. |
+| `barrage` | Raw barrage feed (announcements, special effects). |
+| `superFan`, `superFanJoin`, `superFanBox` | Super-fan lifecycle. |
+| `emoteChat` | Inline emote message. |
+
+### Gift catalog + ecommerce
+
+| Event | Description |
+|---|---|
+| `giftPanelUpdate` | Real-time gift catalog change. Cache-bust your local catalog. |
+| `giftDynamicRestriction` | Per-room gift availability flip / age-gating. |
+| `giftGallery` | Host-side gift wall snapshot. |
+| `giftUnlock` | Host unlocked a gated gift. |
+| `viewerPicksUpdate` | TikTok-promoted viewer-pick gift highlights. |
+| `oecLiveShopping`, `oecLiveManager`, `oecLiveBillboard` | OEC live-shopping events. |
+| `ecShortItemRefresh` | Lucky-bag drop refreshed. |
+
+### Engagement + AI
+
+| Event | Description |
+|---|---|
+| `aiSummary` | TikTok AI summary of the room (entry-time recap, multi-language). |
+| `poll`, `shortTouch` | In-stream poll lifecycle. |
+| `rankText`, `rankUpdate`, `hourlyRank` | Rank events. |
+| `question`, `questionSelected`, `questionSlideDown` | Q&A round events. |
+| `pictionaryUpdate`, `pictionaryEnd`, `pictionaryExit` | Drawing-game round events. |
+| `fansEvent`, `fanTicket` | Fan-club events. |
+| `envelope`, `envelopePortal` | Red-envelope drops + multi-room portal chain. |
+| `gameMoment`, `gameServerFeature` | TikTok Gaming live integration. |
+| `groupLiveMemberNotify` | Group-live member join / leave. |
+| `perception` | Perception event (mute cancel, TikTok hint signal). |
+| `control`, `room`, `liveIntro` | Stream control + room metadata. |
+
+### Catch-all
+
+- `event` - Fires for every decoded event (dump-to-queue pattern).
+- `unknown` - Fires when TikTok ships a method we don't yet model (forward-compat hook).
+
+All events are fully typed with TypeScript interfaces. Your IDE will show autocompletion for every field. See [full per-event JSON examples + field tables](https://tik.tools/docs).
 
 ### Battle / PK example
 
@@ -384,19 +468,23 @@ client.on('gift', (event: GiftEvent) => {
 
 ## Pricing
 
-| Tier | Requests/Day | WebSocket Connections | Price |
-|------|-------------|----------------------|-------|
-| Community | 2,500 | 15 (2h per WS) | Free forever |
-| Pro | 75,000 | 50 (8h per WS) | from $15/wk |
-| Ultra | 300,000 | 250 (8h per WS) | from $45/wk |
-| **Global Agency** | 300,000 | 250 (8h per WS) + Firehose | $119/wk or $399/mo |
+Tier is enforced server-side by your API key. Snapshot below; the full feature matrix lives at [tik.tools/pricing](https://tik.tools/pricing).
 
-Full plan details at [tik.tools/pricing](https://tik.tools/pricing). Highlights:
+| Tier | Weekly | Monthly | Req/min | Req/day | Concurrent WS | WS max duration | Bulk check |
+|---|---|---|---|---|---|---|---|
+| Community | free | free | 5 (300/h) | 2,500 | 1 | 2h | - |
+| Basic | $7 | $19 | 60 | 10,000 | 20 | 8h | 10/req |
+| Pro | $15 | $39 | 300 | 75,000 | 50 | 12h | 50/req |
+| Ultra | $45 | $149 | 1,000 | 300,000 | 250 | 24h | 100/req |
+| **Global Agency** | $119 | $399 | 5,000 | 1,000,000 | 500 | 24h | 200/req |
 
-- **Community** ($0 forever): 2,500 req/day · 15 WS · 2 hours per connection · masked leaderboards. Designed for devs building apps - upgrade when you need real usernames. No datacenter proxies; calls must come from your own IP.
-- **Pro** ($15/wk): 75K req/day · 50 WS · unmasked leaderboards · Feed Discovery · 5 AI caption streams · priority routing · chat support
-- **Ultra** ($45/wk): 300K req/day · 250 WS · 20 AI caption streams · **League Rankings API** unmasked · 99.5% uptime SLA · priority chat support
-- **Global Agency** ($119/wk or $399/mo): Everything in Ultra + **Live Gifter Firehose WS** (region/league/global filters, min-diamond threshold) + VIP Telegram alerts + VIP Web Vault (unmasked historical visual access)
+- **Community** ($0 forever): 1 concurrent WS, 2h per session, masked leaderboards. Designed for devs building apps - upgrade when you need real usernames. No datacenter proxies; calls come from your own IP.
+- **Basic** ($7/wk - $19/mo): 60 req/min, 20 concurrent WS, 8h per WS, datacenter proxies, masked leaderboards, **12h/wk - 60h/mo of bundled AI Live Captions**.
+- **Pro** ($15/wk - $39/mo): 300 req/min, 50 concurrent WS, 12h per WS, **unmasked leaderboards**, Feed Discovery, regional leaderboard signed URLs, **30h/wk - 140h/mo of bundled AI Live Captions**.
+- **Ultra** ($45/wk - $149/mo): 1,000 req/min, 250 concurrent WS, 24h per WS, **Gift Catalog API** (full TikTok gift catalog continuously re-synced), **League Rankings unmasked**, CSV exports, 99.5% uptime SLA, **60h/wk - 260h/mo of bundled AI Live Captions**.
+- **Global Agency** ($119/wk - $399/mo): Everything in Ultra plus **Live Gifter Firehose WS** (region / league / global filters + min-diamond threshold), VIP Telegram alerts, VIP Web Vault (unmasked historical visual access), **gifter intel unmasked**, 500 concurrent WS, **120h/wk - 500h/mo of bundled AI Live Captions**.
+
+Standalone AI Live Captions plans (no API key needed) on [tik.tools/captions](https://tik.tools/captions): Casual ($7/wk - $29/mo for 12h/wk - 60h/mo), Pro ($15/wk - $59/mo for 30h/wk - 140h/mo), Extreme ($29/wk - $99/mo for 60h/wk - 260h/mo). Auto-renew + early-renewal on exhaust so captions never drop mid-stream.
 
 ### Live Gifter Firehose - Global Agency
 
