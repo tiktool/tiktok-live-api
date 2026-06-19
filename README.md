@@ -185,6 +185,54 @@ client.on('chat', (e) => console.log(e.comment));
 client.connect();
 ```
 
+## REST API - leaderboards, recruiting, profiles, gifts
+
+The WebSocket client streams live events. For everything else - leaderboards,
+gaming ranks, recruiting, live status, gift catalogs, profiles - use the
+`TikTool` REST client. One method per endpoint, fully promise-based.
+
+```typescript
+import { TikTool } from 'tiktok-live-api';
+
+const api = new TikTool({ apiKey: 'YOUR_KEY' });
+
+// Live status (single + bulk)
+await api.liveStatus('charlidamelio');
+await api.bulkLiveCheck(['user1', 'user2', 'user3']);
+
+// Leaderboards + rankings
+await api.leaderboard({ region: 'US+' });
+await api.ranklistGaming('US+');
+await api.regionMovers('US+');           // entered top today, below cutoff now
+
+// Recruiting (Global Agency) - find eligible creators
+await api.eligibleCreators({ region: 'US+', limit: 50, min_score: 1000 });
+
+// Profiles + gifts
+await api.profileInfo('khaby.lame');
+await api.userProfile('khaby.lame');
+await api.giftsByCountry('US');
+```
+
+Tier gating is enforced server-side: a call above your tier throws a
+`TikToolError` with `status === 403`. Any endpoint not yet wrapped is reachable
+via `api.request('/webcast/...', { query })`.
+
+```typescript
+import { TikTool, TikToolError } from 'tiktok-live-api';
+try {
+  await api.eligibleCreators({ region: 'US+' });
+} catch (e) {
+  if (e instanceof TikToolError && e.status === 403) {
+    console.log('Upgrade required:', e.message);
+  }
+}
+```
+
+Method groups: signing/connection, live status, rankings/leaderboards, gifts,
+user/profile, content/feed, live analytics, moderation, CAPTCHA solver, captions.
+See [the full endpoint + tier matrix](https://tik.tools/docs).
+
 ## Events (54 v3 event types)
 
 Every event is dispatched by name. `client.on('chat', e => ...)` is fully typed end-to-end. Each event payload extends `BaseEvent` (`type`, `timestamp`, `msgId`, optional `protoVersion: 1 | 2 | 3`).

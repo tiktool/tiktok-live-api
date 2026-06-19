@@ -26,6 +26,8 @@
 
 export { TikTokLive } from './client';
 export type { TikTokLiveOptions } from './client';
+export { TikTool, TikToolError } from './rest';
+export type { TikToolOptions } from './rest';
 export { TikTokCaptions } from './captions';
 export type { TikTokCaptionsOptions } from './captions';
 export type {
