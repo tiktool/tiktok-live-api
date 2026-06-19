@@ -2,6 +2,14 @@
   <img src="https://raw.githubusercontent.com/tiktool/tiktok-live-api/main/banner.png" alt="tiktok-live-api" width="100%" />
 </p>
 
+<p align="center">
+  <a href="https://discord.com/oauth2/authorize?client_id=1482386543233597470">
+    <img src="https://img.shields.io/badge/Add%20TikTool%20Bot%20to%20Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Add TikTool Bot to Discord" height="46">
+  </a>
+</p>
+
+<p align="center"><b>Agency rank feeds in Discord</b>: gaming ranks, creator ranks and 99+ movers across all 30 regions, copy-paste usernames for backstage. Run <code>/ranks</code> to start (Global Agency).</p>
+
 # tiktok-live-api
 
 > 📖 **Full documentation, guides, and dashboard → [tik.tools](https://tik.tools)** &nbsp;|&nbsp; 🐍 **Python SDK → [tik.tools/guides/python-tiktok-live](https://tik.tools/guides/python-tiktok-live)** &nbsp;|&nbsp; 🔌 **WebSocket API → [tik.tools/websocket](https://tik.tools/websocket)**
@@ -474,13 +482,13 @@ Tier is enforced server-side by your API key. Snapshot below; the full feature m
 |---|---|---|---|---|---|---|---|
 | Community | free | free | 5 (300/h) | 2,500 | 1 | 2h | - |
 | Basic | $7 | $19 | 60 | 10,000 | 20 | 8h | 10/req |
-| Pro | $15 | $39 | 300 | 75,000 | 50 | 12h | 50/req |
+| Pro | $15 | $49 | 300 | 75,000 | 50 | 12h | 50/req |
 | Ultra | $45 | $149 | 1,000 | 300,000 | 250 | 24h | 100/req |
 | **Global Agency** | $119 | $399 | 5,000 | 1,000,000 | 500 | 24h | 200/req |
 
 - **Community** ($0 forever): 1 concurrent WS, 2h per session, masked leaderboards. Designed for devs building apps - upgrade when you need real usernames. calls come from your own IP.
 - **Basic** ($7/wk - $19/mo): 60 req/min, 20 concurrent WS, 8h per WS, masked leaderboards, **12h/wk - 60h/mo of bundled AI Live Captions**.
-- **Pro** ($15/wk - $39/mo): 300 req/min, 50 concurrent WS, 12h per WS, **unmasked leaderboards**, Feed Discovery, regional leaderboard signed URLs, **30h/wk - 140h/mo of bundled AI Live Captions**.
+- **Pro** ($15/wk - $49/mo): 300 req/min, 50 concurrent WS, 12h per WS, **unmasked leaderboards**, Feed Discovery, regional leaderboard signed URLs, **30h/wk - 140h/mo of bundled AI Live Captions**.
 - **Ultra** ($45/wk - $149/mo): 1,000 req/min, 250 concurrent WS, 24h per WS, **Gift Catalog API** (full TikTok gift catalog continuously re-synced), **League Rankings unmasked**, CSV exports, 99.5% uptime SLA, **60h/wk - 260h/mo of bundled AI Live Captions**.
 - **Global Agency** ($119/wk - $399/mo): Everything in Ultra plus **Live Gifter Firehose WS** (region / league / global filters + min-diamond threshold), VIP Telegram alerts, VIP Web Vault (unmasked historical visual access), **gifter intel unmasked**, 500 concurrent WS, **120h/wk - 500h/mo of bundled AI Live Captions**.
 
