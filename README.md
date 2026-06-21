@@ -159,7 +159,7 @@ client.connect();
 2. Sign up (no credit card required)
 3. Copy your API key
 
-The free **Community** tier gives you 2,500 requests/day and 15 WebSocket connections (2 hours per connection). Forever free.
+The free **Community** tier gives you 5,000 requests/day, 50 WebSocket sessions (2 hours per connection), and 3 concurrent streams. Forever free.
 
 ## Environment Variable
 
@@ -519,7 +519,7 @@ client.on('gift', (event: GiftEvent) => {
 | **Public Profile Pages (creator + gifter)** | ✓ Indexed | ✗ | ✗ |
 | **CAPTCHA Solving** | ✓ Built-in (Pro+) | Via signing backend | Via signing backend |
 | **Feed Discovery** | ✓ See who's live | ✗ | ✗ |
-| **Free Tier** | ✓ 2,500 req/day, 15 WS, 2h per WS | ✓ MIT-licensed | ✓ MIT-licensed |
+| **Free Tier** | ✓ 5,000 req/day, 50 WS, 3 concurrent, 2h per WS | ✓ MIT-licensed | ✓ MIT-licensed |
 | **ESM + CJS** | ✓ Both supported | ✓ | N/A (Python) |
 
 ## Pricing
@@ -528,13 +528,13 @@ Tier is enforced server-side by your API key. Snapshot below; the full feature m
 
 | Tier | Weekly | Monthly | Req/min | Req/day | Concurrent WS | WS max duration | Bulk check |
 |---|---|---|---|---|---|---|---|
-| Community | free | free | 5 (300/h) | 2,500 | 1 | 2h | - |
+| Community | free | free | 20 | 5,000 | 3 | 2h | - |
 | Basic | $7 | $19 | 60 | 10,000 | 20 | 8h | 10/req |
 | Pro | $15 | $49 | 300 | 75,000 | 50 | 12h | 50/req |
 | Ultra | $45 | $149 | 1,000 | 300,000 | 250 | 24h | 100/req |
 | **Global Agency** | $119 | $399 | 5,000 | 1,000,000 | 500 | 24h | 200/req |
 
-- **Community** ($0 forever): 1 concurrent WS, 2h per session, masked leaderboards. Designed for devs building apps - upgrade when you need real usernames. calls come from your own IP.
+- **Community** ($0 forever): 3 concurrent WS, 2h per session, masked leaderboards, read-only gift catalog sample. Designed for devs building apps - upgrade when you need real usernames or more than ~5 connections (TikTok's per-IP limit). calls come from your own IP.
 - **Basic** ($7/wk - $19/mo): 60 req/min, 20 concurrent WS, 8h per WS, masked leaderboards, **12h/wk - 60h/mo of bundled AI Live Captions**.
 - **Pro** ($15/wk - $49/mo): 300 req/min, 50 concurrent WS, 12h per WS, **unmasked leaderboards**, Feed Discovery, regional leaderboard signed URLs, **30h/wk - 140h/mo of bundled AI Live Captions**.
 - **Ultra** ($45/wk - $149/mo): 1,000 req/min, 250 concurrent WS, 24h per WS, **Gift Catalog API** (full TikTok gift catalog continuously re-synced), **League Rankings unmasked**, CSV exports, 99.5% uptime SLA, **60h/wk - 260h/mo of bundled AI Live Captions**.
