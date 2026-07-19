@@ -10,11 +10,11 @@
 
 <p align="center"><b>Agency rank feeds in Discord</b>: gaming ranks, creator ranks and 99+ movers across all 30 regions, copy-paste usernames for backstage. Run <code>/ranks</code> to start (Global Agency).</p>
 
-# tiktok-live-api
+# TikTok LIVE API for Node.js
 
-> 📖 **Full documentation, guides, and dashboard → [tik.tools](https://tik.tools)** &nbsp;|&nbsp; 🐍 **Python SDK → [tik.tools/guides/python-tiktok-live](https://tik.tools/guides/python-tiktok-live)** &nbsp;|&nbsp; 🔌 **WebSocket API → [tik.tools/websocket](https://tik.tools/websocket)**
+**`tiktok-live-api` is the most complete, production-managed TikTok LIVE API for Node.js and TypeScript.** Connect to any TikTok LIVE stream over a single WebSocket and receive real-time chat messages, gifts, likes, follows, viewer counts, shares and battle events - plus AI live captions with 60+ language translation, an Unreal Engine plugin, and SDKs in multiple languages. Managed signing works out of the box: no third-party sign server, no keys to configure. Powered by the [TikTool](https://tik.tools) managed API.
 
-**Unofficial TikTok LIVE API Client for Node.js & TypeScript** - Connect to any TikTok LIVE stream and receive real-time chat messages, gifts, likes, follows, viewer counts, battles, and more. Includes AI-powered live captions (speech-to-text). Powered by the [TikTool](https://tik.tools) managed API.
+Docs and dashboard: [tik.tools](https://tik.tools) &nbsp;|&nbsp; Python SDK: [tik.tools/guides/python-tiktok-live](https://tik.tools/guides/python-tiktok-live) &nbsp;|&nbsp; WebSocket API: [tik.tools/websocket](https://tik.tools/websocket)
 
 [![npm](https://img.shields.io/npm/v/tiktok-live-api)](https://www.npmjs.com/package/tiktok-live-api)
 [![npm downloads](https://img.shields.io/npm/dm/tiktok-live-api)](https://www.npmjs.com/package/tiktok-live-api)
@@ -26,6 +26,17 @@
 </p>
 
 > This package is **not affiliated with or endorsed by TikTok**. It connects to the [TikTool Live](https://tik.tools) managed API service - 99.9% uptime, no reverse engineering, no maintenance required. Also available for [Python](https://pypi.org/project/tiktok-live-api/) and [any language via WebSocket](https://tik.tools/docs).
+
+## Why tik.tools
+
+The premium managed alternative for TikTok LIVE data. What you get out of the box:
+
+- **Managed signing infrastructure.** Signing runs on our servers and works immediately - no third-party sign server to run, no separate key to configure.
+- **AI live captions and translation.** Real-time speech-to-text with 60+ language translation and speaker labels, available on no other TikTok LIVE library.
+- **Unreal Engine plugin.** Drive avatars, overlays and gameplay directly from live chat, gifts and battles.
+- **Agency and leaderboard intelligence.** Gifter leaderboards, gaming and creator ranks across regions, and eligible-creator discovery.
+- **Multi-language SDKs.** First-class Node.js and Python clients plus a plain WebSocket API for any language.
+- **Free Sandbox tier.** Start building for free, upgrade only when you need higher limits or unmasked data.
 
 ## Install
 
