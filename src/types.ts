@@ -180,6 +180,8 @@ export interface ConnectedEvent {
 /** Disconnection event payload. */
 export interface DisconnectedEvent {
   uniqueId: string;
+  /** WebSocket close code (e.g. 4404 not live, 4005 stream ended). */
+  code?: number;
 }
 
 /** Error event payload. */

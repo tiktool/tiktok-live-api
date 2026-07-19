@@ -26,6 +26,14 @@ import type { TikTokLiveEventMap } from './types';
 const WS_BASE = 'wss://api.tik.tools';
 const VERSION = '1.0.0';
 
+// Terminal server close codes: creator not live / stream ended. Not transient
+// drops - reconnecting on a tight exponential backoff just burns the sandbox
+// connects-per-hour budget on a room that is still offline. Wait on a long
+// fixed backoff instead so the client picks the stream up once it starts.
+const CODE_NOT_LIVE = 4404;
+const CODE_STREAM_END = 4005;
+const TERMINAL_BACKOFF_MS = 60_000;
+
 /** Options for {@link TikTokLive} constructor. */
 export interface TikTokLiveOptions {
   /** Your TikTool API key. Get one free at https://tik.tools */
@@ -190,10 +198,10 @@ export class TikTokLive {
         }
       });
 
-      this._ws.on('close', () => {
+      this._ws.on('close', (code: number) => {
         this._connected = false;
-        this._emit('disconnected', { uniqueId: this.uniqueId });
-        this._maybeReconnect();
+        this._emit('disconnected', { uniqueId: this.uniqueId, code });
+        this._maybeReconnect(code);
       });
 
       this._ws.on('error', (err: Error) => {
@@ -215,7 +223,7 @@ export class TikTokLive {
     this._connected = false;
   }
 
-  private async _maybeReconnect(): Promise<void> {
+  private async _maybeReconnect(closeCode?: number): Promise<void> {
     if (
       this._intentionalClose ||
       !this.autoReconnect ||
@@ -224,7 +232,11 @@ export class TikTokLive {
       return;
     }
     this._reconnectAttempts++;
-    const delay = Math.min(2 ** (this._reconnectAttempts - 1) * 1000, 30_000);
+    const terminal =
+      closeCode === CODE_NOT_LIVE || closeCode === CODE_STREAM_END;
+    const delay = terminal
+      ? TERMINAL_BACKOFF_MS
+      : Math.min(2 ** (this._reconnectAttempts - 1) * 1000, 30_000);
     await new Promise((r) => setTimeout(r, delay));
     try {
       await this.connect();
