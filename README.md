@@ -12,7 +12,7 @@
 
 # TikTok LIVE API for Node.js
 
-**`tiktok-live-api` is the most complete, production-managed TikTok LIVE API for Node.js and TypeScript.** Connect to any TikTok LIVE stream over a single WebSocket and receive real-time chat messages, gifts, likes, follows, viewer counts, shares and battle events - plus AI live captions with 60+ language translation, an Unreal Engine plugin, and SDKs in multiple languages. Managed signing works out of the box: no third-party sign server, no keys to configure. Powered by the [TikTool](https://tik.tools) managed API.
+**`tiktok-live-api` is the most complete, production-managed TikTok LIVE API for Node.js and TypeScript.** Connect to any TikTok LIVE stream over a single WebSocket and receive real-time chat messages, gifts, likes, follows, viewer counts, shares and battle events, with an Unreal Engine plugin and SDKs in multiple languages. Managed signing works out of the box: no third-party sign server, no keys to configure. Powered by the [TikTool](https://tik.tools) managed API.
 
 Docs and dashboard: [tik.tools](https://tik.tools) &nbsp;|&nbsp; Python SDK: [tik.tools/guides/python-tiktok-live](https://tik.tools/guides/python-tiktok-live) &nbsp;|&nbsp; WebSocket API: [tik.tools/websocket](https://tik.tools/websocket)
 
@@ -32,7 +32,6 @@ Docs and dashboard: [tik.tools](https://tik.tools) &nbsp;|&nbsp; Python SDK: [ti
 The premium managed alternative for TikTok LIVE data. What you get out of the box:
 
 - **Managed signing infrastructure.** Signing runs on our servers and works immediately - no third-party sign server to run, no separate key to configure.
-- **AI live captions and translation.** Real-time speech-to-text with 60+ language translation and speaker labels, available on no other TikTok LIVE library.
 - **Unreal Engine plugin.** Drive avatars, overlays and gameplay directly from live chat, gifts and battles.
 - **Agency and leaderboard intelligence.** Gifter leaderboards, gaming and creator ranks across regions, and eligible-creator discovery.
 - **Multi-language SDKs.** First-class Node.js and Python clients plus a plain WebSocket API for any language.
@@ -241,7 +240,7 @@ try {
 ```
 
 Method groups: signing/connection, live status, rankings/leaderboards, gifts,
-user/profile, content/feed, live analytics, moderation, CAPTCHA solver, captions.
+user/profile, content/feed, live analytics, moderation, CAPTCHA solver, captions (legacy).
 See [the full endpoint + tier matrix](https://tik.tools/docs).
 
 ## Events (54 v3 event types)
@@ -285,7 +284,7 @@ Every event is dispatched by name. `client.on('chat', e => ...)` is fully typed 
 
 | Event | Description |
 |---|---|
-| `caption` | **NEW in v3.** TikTok native auto-captions on the LIVE WebSocket. `text`, `isFinal`, `startedAtMs`, `endsAtMs`. Independent of the operator-managed [TikTok Live Captions](https://tik.tools/captions) product. |
+| `caption` | **NEW in v3.** TikTok native captions, delivered on the standard LIVE WebSocket when TikTok provides them for the stream. `text`, `isFinal`, `startedAtMs`, `endsAtMs`. |
 
 ### Creator-side events
 
@@ -380,36 +379,19 @@ await client.connect();
 ```
 
 
-## Live Captions (Speech-to-Text)
+## Live Captions (legacy)
 
-Transcribe and translate any TikTok LIVE stream in real-time. **This feature is unique to TikTool Live - no other TikTok library offers it.**
+The Live Captions service is no longer offered to new customers. It remains available for existing caption customers, and the `TikTokCaptions` client stays in this package for them. For free captions on any stream, use the `caption` event from TikTok native captions (see Native captions above).
 
 ```typescript
 import { TikTokCaptions } from 'tiktok-live-api';
 
-const captions = new TikTokCaptions('streamer_username', {
-  apiKey: 'YOUR_API_KEY',
-  translate: 'en',       // translate to English
-  diarization: true,     // identify who is speaking
-});
-
-captions.on('caption', (event) => {
-  const speaker = event.speaker ? `[${event.speaker}] ` : '';
-  console.log(`${speaker}${event.text}${event.isFinal ? ' ✓' : '...'}`);
-});
-
-captions.on('translation', (event) => {
-  console.log(`  → ${event.text}`);
-});
-
-captions.on('credits', (event) => {
-  console.log(`${event.remaining}/${event.total} minutes remaining`);
-});
-
+const captions = new TikTokCaptions('streamer_username', { apiKey: 'YOUR_API_KEY', translate: 'en' });
+captions.on('caption', (event) => console.log(event.text));
 captions.connect();
 ```
 
-### Caption Events
+### Caption Events (legacy)
 
 | Event | Description | Key Fields |
 |-------|-------------|------------|
@@ -495,7 +477,7 @@ client.on('gift', (event: GiftEvent) => {
 - `client.connected` - Whether currently connected
 - `client.eventCount` - Total events received
 
-### `new TikTokCaptions(uniqueId, options?)`
+### `new TikTokCaptions(uniqueId, options?)` (legacy)
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
@@ -518,7 +500,6 @@ client.on('gift', (event: GiftEvent) => {
 | **Type** | Managed agency-grade platform | Self-hosted client | Self-hosted client |
 | **Hosting** | ✓ Fully managed, 99.9% uptime | You run the client; signing via paid backend | You run the client; signing via paid backend |
 | **TypeScript** | ✓ First-class, fully typed | ✓ Typed | N/A (Python) |
-| **AI Live Captions (STT + translation)** | ✓ 60+ languages | ✗ | ✗ |
 | **Unreal Engine plugin** | ✓ | ✗ | ✗ |
 | **Gifter Intel (LTV, archetypes)** | ✓ | ✗ | ✗ |
 | **Live Leaderboards (real-time)** | ✓ Regional + global | ✗ | ✗ |
@@ -546,12 +527,10 @@ Tier is enforced server-side by your API key. Snapshot below; the full feature m
 | **Global Agency** | $119 | $399 | 5,000 | 1,000,000 | 500 | Unlimited | 24h | 200/req |
 
 - **Community** ($0 forever): 3 concurrent WS, 2h per session, masked leaderboards, read-only gift catalog sample. Designed for devs building apps - upgrade when you need real usernames or more than ~5 connections (TikTok's per-IP limit). calls come from your own IP.
-- **Basic** ($7/wk - $19/mo): 60 req/min, 20 concurrent WS, 8h per WS, masked leaderboards, **12h/wk - 60h/mo of bundled AI Live Captions**.
-- **Pro** ($15/wk - $49/mo): 300 req/min, 50 concurrent WS, 12h per WS, **unmasked leaderboards**, Feed Discovery, regional leaderboard signed URLs, **30h/wk - 140h/mo of bundled AI Live Captions**.
-- **Ultra** ($45/wk - $149/mo): 1,000 req/min, 250 concurrent WS, 24h per WS, **Gift Catalog API** (full TikTok gift catalog continuously re-synced), **League Rankings unmasked**, CSV exports, 99.5% uptime SLA, **60h/wk - 260h/mo of bundled AI Live Captions**.
-- **Global Agency** ($119/wk - $399/mo): Everything in Ultra plus **Live Gifter Firehose WS** (region / league / global filters + min-diamond threshold), VIP Telegram alerts, VIP Web Vault (unmasked historical visual access), **gifter intel unmasked**, 500 concurrent WS, **120h/wk - 500h/mo of bundled AI Live Captions**.
-
-Standalone AI Live Captions plans (no API key needed) on [tik.tools/captions](https://tik.tools/captions): Casual ($7/wk - $29/mo for 12h/wk - 60h/mo), Pro ($15/wk - $59/mo for 30h/wk - 140h/mo), Extreme ($29/wk - $99/mo for 60h/wk - 260h/mo). Auto-renew + early-renewal on exhaust so captions never drop mid-stream.
+- **Basic** ($7/wk - $19/mo): 60 req/min, 20 concurrent WS, 8h per WS, masked leaderboards.
+- **Pro** ($15/wk - $49/mo): 300 req/min, 50 concurrent WS, 12h per WS, **unmasked leaderboards**, Feed Discovery, regional leaderboard signed URLs.
+- **Ultra** ($45/wk - $149/mo): 1,000 req/min, 250 concurrent WS, 24h per WS, **Gift Catalog API** (full TikTok gift catalog continuously re-synced), **League Rankings unmasked**, CSV exports, 99.5% uptime SLA.
+- **Global Agency** ($119/wk - $399/mo): Everything in Ultra plus **Live Gifter Firehose WS** (region / league / global filters + min-diamond threshold), VIP Telegram alerts, VIP Web Vault (unmasked historical visual access), **gifter intel unmasked**, 500 concurrent WS.
 
 ### Live Gifter Firehose - Global Agency
 
