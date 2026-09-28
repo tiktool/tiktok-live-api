@@ -36,7 +36,7 @@ const TERMINAL_BACKOFF_MS = 60_000;
 
 /** Options for {@link TikTokLive} constructor. */
 export interface TikTokLiveOptions {
-  /** Your TikTool API key. Get one free at https://tik.tools */
+  /** Your TikTool API key. Get one at https://tik.tools/pricing (7-day free evaluation) */
   apiKey?: string;
   /** Auto-reconnect on disconnect (default: true). */
   autoReconnect?: boolean;
@@ -89,7 +89,7 @@ export class TikTokLive {
     this.uniqueId = uniqueId.replace(/^@/, '');
     this.apiKey = options.apiKey || process.env.TIKTOOL_API_KEY || '';
     if (!this.apiKey) {
-      throw new Error('apiKey is required. Get a free key at https://tik.tools');
+      throw new Error('apiKey is required. Get an API key at https://tik.tools/pricing');
     }
     this.autoReconnect = options.autoReconnect ?? true;
     this.maxReconnectAttempts = options.maxReconnectAttempts ?? 5;

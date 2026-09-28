@@ -85,7 +85,7 @@ export class TikTokCaptions {
     this.uniqueId = uniqueId.replace(/^@/, '');
     this.apiKey = options.apiKey || process.env.TIKTOOL_API_KEY || '';
     if (!this.apiKey) {
-      throw new Error('apiKey is required. Get a free key at https://tik.tools');
+      throw new Error('apiKey is required. Get an API key at https://tik.tools/pricing');
     }
     this.translate = options.translate;
     this.diarization = options.diarization ?? true;

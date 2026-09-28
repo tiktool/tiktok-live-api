@@ -8,7 +8,7 @@
   </a>
 </p>
 
-<p align="center"><b>Agency rank feeds in Discord</b>: gaming ranks, creator ranks and 99+ movers across all 30 regions, copy-paste usernames for backstage. Run <code>/ranks</code> to start (Global Agency).</p>
+<p align="center"><b>Agency rank feeds in Discord</b>: gaming ranks, creator ranks and 99+ movers across all 30 regions, copy-paste usernames for backstage. Run <code>/ranks</code> to start (Agency).</p>
 
 # TikTok LIVE API for Node.js
 
@@ -35,7 +35,7 @@ The premium managed alternative for TikTok LIVE data. What you get out of the bo
 - **Unreal Engine plugin.** Drive avatars, overlays and gameplay directly from live chat, gifts and battles.
 - **Agency and leaderboard intelligence.** Gifter leaderboards, gaming and creator ranks across regions, and eligible-creator discovery.
 - **Multi-language SDKs.** First-class Node.js and Python clients plus a plain WebSocket API for any language.
-- **Free Sandbox tier.** Start building for free, upgrade only when you need higher limits or unmasked data.
+- **Free 7-day Sandbox evaluation.** Try the API free for 7 days from account creation, then pick a paid plan at [tik.tools/pricing](https://tik.tools/pricing).
 
 ## Install
 
@@ -86,7 +86,7 @@ That's it. **No complex setup, no protobuf, no reverse engineering, no breakages
 
 ## 🚀 Try It Now - Live Demo
 
-Copy-paste this into a file and run it. Connects to a live TikTok stream and prints every event in real time. Works on the free Community tier - 2 hours per WebSocket connection.
+Copy-paste this into a file and run it. Connects to a live TikTok stream and prints every event in real time. Works during the free 7-day Sandbox evaluation - 2 hours per WebSocket connection.
 
 **Save as `demo.mjs` and run with `node demo.mjs`:**
 
@@ -95,7 +95,7 @@ Copy-paste this into a file and run it. Connects to a live TikTok stream and pri
 // npm install tiktok-live-api
 import { TikTokLive } from 'tiktok-live-api';
 
-const API_KEY       = 'YOUR_API_KEY';        // Get free key → https://tik.tools
+const API_KEY       = 'YOUR_API_KEY';        // Get an API key - https://tik.tools/pricing
 const LIVE_USERNAME = 'tv_asahi_news';       // Any live TikTok username
 
 const client = new TikTokLive(LIVE_USERNAME, { apiKey: API_KEY });
@@ -112,7 +112,7 @@ client.on('connected',    () => console.log(`\n✅ Connected to @${LIVE_USERNAME
 client.on('disconnected', () => console.log(`\n📊 Disconnected. Received ${events} events.\n`));
 
 client.connect();
-// Press Ctrl+C to stop. Community tier caps each WebSocket at 2 hours.
+// Press Ctrl+C to stop. Sandbox allows 2 hours per WebSocket connection.
 ```
 
 <details>
@@ -146,7 +146,7 @@ ws.on('message', (raw) => {
   }
 });
 ws.on('close', () => console.log(`\n📊 Disconnected. Received ${events} events.\n`));
-// Press Ctrl+C to stop. Community tier caps each WebSocket at 2 hours.
+// Press Ctrl+C to stop. Sandbox allows 2 hours per WebSocket connection.
 ```
 
 </details>
@@ -163,13 +163,13 @@ client.on('chat', (e) => console.log(`${e.user.uniqueId}: ${e.comment}`));
 client.connect();
 ```
 
-## Get a Free API Key
+## Get an API Key (7-day free evaluation)
 
 1. Go to [tik.tools](https://tik.tools)
 2. Sign up (no credit card required)
 3. Copy your API key
 
-The free **Community** tier gives you 5,000 requests/day, 3 concurrent WebSocket streams (60 new connects/hour, 2 hours per connection). Forever free.
+New accounts start on **Sandbox**, a free 7-day evaluation counted from the day the account was created: 20 requests/minute, 5,000 requests/day, 3 concurrent WebSocket connections, 60 new WebSocket connects per hour and 2 hours per WebSocket connection. After 7 days the key is refused (WebSocket close `4401` "Evaluation period ended", REST `403`) until the account moves to a paid plan (Basic and up, see [tik.tools/pricing](https://tik.tools/pricing)).
 
 ## Environment Variable
 
@@ -215,7 +215,7 @@ await api.leaderboard({ region: 'US+' });
 await api.ranklistGaming('US+');
 await api.regionMovers('US+');           // entered top today, below cutoff now
 
-// Recruiting (Global Agency) - find eligible creators
+// Recruiting (Agency) - find eligible creators
 await api.eligibleCreators({ region: 'US+', limit: 50, min_score: 1000 });
 
 // Profiles + gifts
@@ -511,7 +511,7 @@ client.on('gift', (event: GiftEvent) => {
 | **Public Profile Pages (creator + gifter)** | ✓ Indexed | ✗ | ✗ |
 | **CAPTCHA Solving** | ✓ Built-in (Pro+) | Via signing backend | Via signing backend |
 | **Feed Discovery** | ✓ See who's live | ✗ | ✗ |
-| **Free Tier** | ✓ 5,000 req/day, 3 concurrent WS, 60 connects/hr, 2h per WS | ✓ MIT-licensed | ✓ MIT-licensed |
+| **Free evaluation** | 7 days (Sandbox): 20 req/min, 5,000 req/day, 3 concurrent WS, 60 connects/hr, 2h per WS | ✓ MIT-licensed | ✓ MIT-licensed |
 | **ESM + CJS** | ✓ Both supported | ✓ | N/A (Python) |
 
 ## Pricing
@@ -520,19 +520,19 @@ Tier is enforced server-side by your API key. Snapshot below; the full feature m
 
 | Tier | Weekly | Monthly | Req/min | Req/day | Concurrent WS | Connects/hr | WS max duration | Bulk check |
 |---|---|---|---|---|---|---|---|---|
-| Community | free | free | 20 | 5,000 | 3 | 60 | 2h | - |
-| Basic | $7 | $19 | 60 | 10,000 | 20 | Unlimited | 8h | 10/req |
-| Pro | $15 | $49 | 300 | 75,000 | 50 | Unlimited | 12h | 50/req |
-| Ultra | $45 | $149 | 1,000 | 300,000 | 250 | Unlimited | 24h | 100/req |
-| **Global Agency** | $119 | $399 | 5,000 | 1,000,000 | 500 | Unlimited | 24h | 200/req |
+| Sandbox (7-day evaluation) | - | - | 20 | 5,000 | 3 | 60 | 2h | 5/req |
+| Basic | $7 | $19 | 30 | 10,000 | 20 | Unlimited | 8h | 10/req |
+| Pro | $15 | $49 | 120 | 75,000 | 50 | Unlimited | 12h | 50/req |
+| Ultra | $45 | $149 | 300 | 300,000 | 250 | Unlimited | 24h | 100/req |
+| **Agency** | $119 | $399 | 1,000 | 1,000,000 | 500 | Unlimited | 24h | 200/req |
 
-- **Community** ($0 forever): 3 concurrent WS, 2h per session, masked leaderboards, read-only gift catalog sample. Designed for devs building apps - upgrade when you need real usernames or more than ~5 connections (TikTok's per-IP limit). calls come from your own IP.
-- **Basic** ($7/wk - $19/mo): 60 req/min, 20 concurrent WS, 8h per WS, masked leaderboards.
-- **Pro** ($15/wk - $49/mo): 300 req/min, 50 concurrent WS, 12h per WS, **unmasked leaderboards**, Feed Discovery, regional leaderboard signed URLs.
-- **Ultra** ($45/wk - $149/mo): 1,000 req/min, 250 concurrent WS, 24h per WS, **Gift Catalog API** (full TikTok gift catalog continuously re-synced), **League Rankings unmasked**, CSV exports, 99.5% uptime SLA.
-- **Global Agency** ($119/wk - $399/mo): Everything in Ultra plus **Live Gifter Firehose WS** (region / league / global filters + min-diamond threshold), VIP Telegram alerts, VIP Web Vault (unmasked historical visual access), **gifter intel unmasked**, 500 concurrent WS.
+- **Sandbox** (free 7-day evaluation from account creation, then a paid plan is required): 20 req/min, 5,000 req/day, 3 concurrent WS, 60 new connects/hr, 2h per WS, masked leaderboards, read-only gift catalog sample. Designed for devs building apps - upgrade when you need real usernames or more than ~5 connections (TikTok's per-IP limit). calls come from your own IP.
+- **Basic** ($7/wk - $19/mo): 30 req/min, 10,000 req/day, 20 concurrent WS, 8h per WS, masked leaderboards.
+- **Pro** ($15/wk - $49/mo): 120 req/min, 75,000 req/day, 50 concurrent WS, 12h per WS, **unmasked leaderboards**, Feed Discovery, regional leaderboard signed URLs.
+- **Ultra** ($45/wk - $149/mo): 300 req/min, 300,000 req/day, 250 concurrent WS, 24h per WS, **Gift Catalog API** (full TikTok gift catalog continuously re-synced), **League Rankings unmasked**, CSV exports, 99.5% uptime SLA.
+- **Agency** ($119/wk - $399/mo): Everything in Ultra plus **Live Gifter Firehose WS** (region / league / global filters + min-diamond threshold), VIP Telegram alerts, VIP Web Vault (unmasked historical visual access), **gifter intel unmasked**, 500 concurrent WS.
 
-### Live Gifter Firehose - Global Agency
+### Live Gifter Firehose - Agency
 
 Real-time gift event stream. Filter by region, league, or globally; cap by minimum diamond threshold. Mid-stream filter updates supported via `update_filter` frame, no reconnect needed.
 

@@ -19,7 +19,7 @@
  * ```
  *
  * @see {@link https://tik.tools/docs | Full API Documentation}
- * @see {@link https://tik.tools | Get a free API key}
+ * @see {@link https://tik.tools/pricing | Get an API key (7-day free evaluation)}
  *
  * @packageDocumentation
  */

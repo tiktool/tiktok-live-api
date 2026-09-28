@@ -112,7 +112,7 @@ export interface WebcastPushConnectionOptions extends TikTokLiveOptions {
  * const { WebcastPushConnection } = require('tiktok-live-api');
  *
  * const connection = new WebcastPushConnection('username', {
- *   signApiKey: 'YOUR_TIKTOOL_API_KEY', // Get free at tik.tools
+ *   signApiKey: 'YOUR_TIKTOOL_API_KEY', // Get one at tik.tools/pricing
  * });
  *
  * connection.on('chat', (data) => {
