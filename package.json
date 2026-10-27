@@ -1,6 +1,6 @@
 {
   "name": "tiktok-live-api",
-  "version": "1.4.11",
+  "version": "1.5.0",
   "description": "TikTok LIVE API for Node.js: real-time WebSocket chat, gifts, likes, viewers and battles. Managed signing, no sign server. Node and Python SDKs.",
   "main": "dist/index.js",
   "module": "dist/index.mjs",

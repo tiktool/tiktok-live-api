@@ -15,6 +15,13 @@ export interface TikTokUser {
   profilePictureUrl: string;
   followRole: number;
   isSubscriber: boolean;
+  /**
+   * Whether this viewer follows the streamer: 0 = not following, 1 = follows,
+   * 2 = mutual (friends). Present on chat, like, member and social users; absent
+   * on gift senders and nested users. On a follow event it is the state before
+   * that follow.
+   */
+  followStatus?: number;
 }
 
 /** Payload for `chat` events. */
@@ -34,6 +41,14 @@ export interface GiftEvent {
   diamondCount: number;
   repeatCount: number;
   repeatEnd: boolean;
+  /** Default animation effect id of the gift. Absent when the gift has none. */
+  primaryEffectId?: number;
+  /** Colour the sender picked (1-based). Only on colour-selectable gifts such as Fireworks, Paper Crane, Sunglasses. */
+  colorId?: number;
+  /** Name of the picked colour, e.g. "Starry Blue". */
+  colorName?: string;
+  /** Animation effect id of the picked colour. Overrides `primaryEffectId` for this send. */
+  effectId?: number;
 }
 
 /** Payload for `like` events. */

@@ -254,8 +254,8 @@ Every event is dispatched by name. `client.on('chat', e => ...)` is fully typed 
 | `connected` | WebSocket open. |
 | `disconnected` | WebSocket close. |
 | `roomInfo` | One-shot post-connect: `{ roomId, wsHost, clusterRegion, connectedAt }`. |
-| `chat` | Chat message. `user`, `comment`, `emotes`, optional `starred`. **v3** adds `language` (auto-detected ISO 639-1) + `messageUuid` (moderation correlation). |
-| `gift` | Virtual gift. `giftId`, `giftName`, `diamondCount`, `repeatCount`, `repeatEnd`, `giftType`. **v3** adds `transactionId` (dedup key), `senderUserId`, `relationship` (`joinDayNumber`, `fromUser`, `toUser`). |
+| `chat` | Chat message. `user`, `comment`, `emotes`, optional `starred`. **v3** adds `language` (auto-detected ISO 639-1) + `messageUuid` (moderation correlation). Users carry `followStatus` (0 = not following, 1 = follows, 2 = mutual). |
+| `gift` | Virtual gift. `giftId`, `giftName`, `diamondCount`, `repeatCount`, `repeatEnd`, `giftType`. **v3** adds `transactionId` (dedup key), `senderUserId`, `relationship` (`joinDayNumber`, `fromUser`, `toUser`). Colour-selectable gifts (Fireworks, Paper Crane, Sunglasses) add `colorId`, `colorName` (e.g. `"Starry Blue"`) and `effectId`; `primaryEffectId` is the default animation. |
 | `like` | Like batch. `likeCount`, `totalLikes`. |
 | `member` | Viewer joined. **v3** adds `actionCode`, `entrySource` (`"homepage_hot-live_cell"`, `"follow-tab"`, ...), `entryAction` (`"draw"`/`"click"`), `entryType` (`"rec"` = algorithmic). |
 | `social` | Follow / share. |
