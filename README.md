@@ -526,7 +526,7 @@ Tier is enforced server-side by your API key. Snapshot below; the full feature m
 | Ultra | $45 | $149 | 300 | 300,000 | 250 | Unlimited | 24h | 100/req |
 | **Agency** | $119 | $399 | 1,000 | 1,000,000 | 500 | Unlimited | 24h | 200/req |
 
-- **Sandbox** (free 7-day evaluation from account creation, then a paid plan is required): 20 req/min, 5,000 req/day, 3 concurrent WS, 60 new connects/hr, 2h per WS, masked leaderboards, read-only gift catalog sample. Designed for devs building apps - upgrade when you need real usernames or more than ~5 connections (TikTok's per-IP limit). calls come from your own IP.
+- **Sandbox** (free 7-day evaluation from account creation, then a paid plan is required): 20 req/min, 5,000 req/day, 3 concurrent WS, 60 new connects/hr, 2h per WS, masked leaderboards, read-only gift catalog sample. Designed for devs building apps - upgrade when you need real usernames or more connections.
 - **Basic** ($7/wk - $19/mo): 30 req/min, 10,000 req/day, 20 concurrent WS, 8h per WS, masked leaderboards.
 - **Pro** ($15/wk - $49/mo): 120 req/min, 75,000 req/day, 50 concurrent WS, 12h per WS, **unmasked leaderboards**, Feed Discovery, regional leaderboard signed URLs.
 - **Ultra** ($45/wk - $149/mo): 300 req/min, 300,000 req/day, 250 concurrent WS, 24h per WS, **Gift Catalog API** (full TikTok gift catalog continuously re-synced), **League Rankings unmasked**, CSV exports, 99.5% uptime SLA.
