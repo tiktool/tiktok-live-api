@@ -1,7 +1,7 @@
 {
   "name": "tiktok-live-api",
-  "version": "1.5.0",
-  "description": "TikTok LIVE API for Node.js: real-time WebSocket chat, gifts, likes, viewers and battles. Managed signing, no sign server. Node and Python SDKs.",
+  "version": "1.5.1",
+  "description": "TikTok LIVE API for Node.js: real-time WebSocket chat, gifts, likes, viewers and battles. Fully managed. Node and Python SDKs.",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
@@ -18,7 +18,7 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "tsup src/index.ts --format cjs,esm --dts --clean",
+    "build": "tsup src/index.ts --format cjs,esm --dts --clean && node strip-comments.mjs dist",
     "prepublishOnly": "npm run build"
   },
   "keywords": [
@@ -38,7 +38,6 @@
     "tiktok-events",
     "tiktok-data",
     "tiktok-stream",
-    "tiktok-scraper",
     "tiktok-connector",
     "tiktok-monitoring",
     "tiktok-viewer",
@@ -52,7 +51,6 @@
     "unreal-engine",
     "agency",
     "leaderboard",
-    "euler-stream",
     "livestream-api"
   ],
   "author": {

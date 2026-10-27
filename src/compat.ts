@@ -101,7 +101,7 @@ export interface WebcastPushConnectionOptions extends TikTokLiveOptions {
  *
  * Accepts the exact same constructor signature and event names.
  * Under the hood, connects to the TikTools managed WebSocket API
- * for 99.9% uptime and zero maintenance.
+ * with zero maintenance.
  *
  * @example
  * ```typescript

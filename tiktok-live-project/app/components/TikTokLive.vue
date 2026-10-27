@@ -3,7 +3,7 @@
     <div style="padding: 24px; border-bottom: 1px solid #e5e7eb">
       <h2 style="margin: 0 0 8px 0; font-size: 1.5rem; font-weight: 600">TikTok Live SDK</h2>
       <p style="margin: 0; font-size: 0.875rem; color: #6b7280">
-        Get your own API key and unlock unlimited connections at <a href="https://tik.tools" target="_blank" style="color: #3b82f6; text-decoration: none">tik.tools</a>
+        Get your own API key and unlock more connections at <a href="https://tik.tools" target="_blank" style="color: #3b82f6; text-decoration: none">tik.tools</a>
       </p>
     </div>
     <div style="padding: 24px">

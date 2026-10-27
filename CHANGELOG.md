@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.5.1 - 2026-10-27
+
+### Removed
+
+- `TikTool.chat()` (REST client) - the endpoint it called has been retired.
+
+### Changed
+
+- Leaner package: build comments are no longer shipped.
+
 ## 1.5.0 - 2026-10-27
 
 ### Added

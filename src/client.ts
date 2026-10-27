@@ -24,7 +24,7 @@ import WebSocket from 'ws';
 import type { TikTokLiveEventMap } from './types';
 
 const WS_BASE = 'wss://api.tik.tools';
-const VERSION = '1.0.0';
+const VERSION = '1.5.1';
 
 // Terminal server close codes: creator not live / stream ended. Not transient
 // drops - reconnecting on a tight exponential backoff just burns the sandbox
@@ -53,7 +53,7 @@ type EventHandler<T> = (data: T) => void | Promise<void>;
  * ```typescript
  * const client = new TikTokLive('username', { apiKey: 'KEY' });
  * client.on('chat', (e) => console.log(e.comment));
- * client.on('gift', (e) => console.log(`${e.giftName} worth ${e.diamondCount} 💎`));
+ * client.on('gift', (e) => console.log(`${e.giftName} worth ${e.diamondCount} diamonds`));
  * client.connect();
  * ```
  */

@@ -25,13 +25,13 @@ Docs and dashboard: [tik.tools](https://tik.tools) &nbsp;|&nbsp; Python SDK: [ti
   <img src="https://raw.githubusercontent.com/tiktool/tiktok-live-api/main/tiktok-live-api.gif" alt="TikTok Live API Demo - real-time chat, gifts, and viewer events" width="700">
 </p>
 
-> This package is **not affiliated with or endorsed by TikTok**. It connects to the [TikTool Live](https://tik.tools) managed API service - 99.9% uptime, no reverse engineering, no maintenance required. Also available for [Python](https://pypi.org/project/tiktok-live-api/) and [any language via WebSocket](https://tik.tools/docs).
+> This package is **not affiliated with or endorsed by TikTok**. It connects to the [TikTool Live](https://tik.tools) managed API service - no maintenance required. Also available for [Python](https://pypi.org/project/tiktok-live-api/) and [any language via WebSocket](https://tik.tools/docs).
 
 ## Why tik.tools
 
 The premium managed alternative for TikTok LIVE data. What you get out of the box:
 
-- **Managed signing infrastructure.** Signing runs on our servers and works immediately - no third-party sign server to run, no separate key to configure.
+- **Fully managed.** Works immediately with one API key - nothing extra to run or configure.
 - **Unreal Engine plugin.** Drive avatars, overlays and gameplay directly from live chat, gifts and battles.
 - **Agency and leaderboard intelligence.** Gifter leaderboards, gaming and creator ranks across regions, and eligible-creator discovery.
 - **Multi-language SDKs.** First-class Node.js and Python clients plus a plain WebSocket API for any language.
@@ -62,7 +62,7 @@ client.on('chat', (event) => {
 });
 
 client.on('gift', (event) => {
-  console.log(`${event.user.uniqueId} sent ${event.giftName} (${event.diamondCount} 💎)`);
+  console.log(`${event.user.uniqueId} sent ${event.giftName} (${event.diamondCount} diamonds)`);
 });
 
 client.on('like', (event) => {
@@ -80,11 +80,11 @@ client.on('roomUserSeq', (event) => {
 client.connect();
 ```
 
-That's it. **No complex setup, no protobuf, no reverse engineering, no breakages when TikTok updates.**
+That's it. **No complex setup and no maintenance when TikTok updates.**
 
 ---
 
-## 🚀 Try It Now - Live Demo
+## Try It Now - Live Demo
 
 Copy-paste this into a file and run it. Connects to a live TikTok stream and prints every event in real time. Works during the free 7-day Sandbox evaluation - 2 hours per WebSocket connection.
 
@@ -96,27 +96,27 @@ Copy-paste this into a file and run it. Connects to a live TikTok stream and pri
 import { TikTokLive } from 'tiktok-live-api';
 
 const API_KEY       = 'YOUR_API_KEY';        // Get an API key - https://tik.tools/pricing
-const LIVE_USERNAME = 'tv_asahi_news';       // Any live TikTok username
+const LIVE_USERNAME = 'creator_username';    // Any live TikTok username
 
 const client = new TikTokLive(LIVE_USERNAME, { apiKey: API_KEY });
 let events = 0;
 
-client.on('chat',        e => { events++; console.log(`💬 ${e.user.uniqueId}: ${e.comment}`); });
-client.on('gift',        e => { events++; console.log(`🎁 ${e.user.uniqueId} sent ${e.giftName} (${e.diamondCount}💎)`); });
-client.on('like',        e => { events++; console.log(`❤️  ${e.user.uniqueId} liked × ${e.likeCount}`); });
-client.on('member',      e => { events++; console.log(`👋 ${e.user.uniqueId} joined`); });
-client.on('follow',      e => { events++; console.log(`➕ ${e.user.uniqueId} followed`); });
-client.on('roomUserSeq', e => { events++; console.log(`👀 Viewers: ${e.viewerCount}`); });
+client.on('chat',        e => { events++; console.log(`${e.user.uniqueId}: ${e.comment}`); });
+client.on('gift',        e => { events++; console.log(`${e.user.uniqueId} sent ${e.giftName} (${e.diamondCount} diamonds)`); });
+client.on('like',        e => { events++; console.log(`${e.user.uniqueId} liked x ${e.likeCount}`); });
+client.on('member',      e => { events++; console.log(`${e.user.uniqueId} joined`); });
+client.on('follow',      e => { events++; console.log(`${e.user.uniqueId} followed`); });
+client.on('roomUserSeq', e => { events++; console.log(`Viewers: ${e.viewerCount}`); });
 
-client.on('connected',    () => console.log(`\n✅ Connected to @${LIVE_USERNAME} - streaming events...\n`));
-client.on('disconnected', () => console.log(`\n📊 Disconnected. Received ${events} events.\n`));
+client.on('connected',    () => console.log(`\nConnected to @${LIVE_USERNAME} - streaming events...\n`));
+client.on('disconnected', () => console.log(`\nDisconnected. Received ${events} events.\n`));
 
 client.connect();
 // Press Ctrl+C to stop. Sandbox allows 2 hours per WebSocket connection.
 ```
 
 <details>
-<summary><strong>🔌 Pure WebSocket version (no SDK, any language)</strong></summary>
+<summary><strong>Pure WebSocket version (no SDK, any language)</strong></summary>
 
 ```javascript
 // ws-demo.mjs - Pure WebSocket, zero SDK
@@ -124,28 +124,28 @@ client.connect();
 import WebSocket from 'ws';
 
 const API_KEY       = 'YOUR_API_KEY';
-const LIVE_USERNAME = 'tv_asahi_news';
+const LIVE_USERNAME = 'creator_username';
 
 const ws = new WebSocket(`wss://api.tik.tools?uniqueId=${LIVE_USERNAME}&apiKey=${API_KEY}`);
 let events = 0;
 
-ws.on('open', () => console.log(`\n✅ Connected to @${LIVE_USERNAME} - streaming events...\n`));
+ws.on('open', () => console.log(`\nConnected to @${LIVE_USERNAME} - streaming events...\n`));
 ws.on('message', (raw) => {
   const msg = JSON.parse(raw);
   events++;
   const d = msg.data || {};
   const user = d.user?.uniqueId || '';
   switch (msg.event) {
-    case 'chat':        console.log(`💬 ${user}: ${d.comment}`); break;
-    case 'gift':        console.log(`🎁 ${user} sent ${d.giftName} (${d.diamondCount}💎)`); break;
-    case 'like':        console.log(`❤️  ${user} liked × ${d.likeCount}`); break;
-    case 'member':      console.log(`👋 ${user} joined`); break;
-    case 'roomUserSeq': console.log(`👀 Viewers: ${d.viewerCount}`); break;
-    case 'roomInfo':    console.log(`📡 Room: ${msg.roomId}`); break;
-    default:            console.log(`📦 ${msg.event}`); break;
+    case 'chat':        console.log(`${user}: ${d.comment}`); break;
+    case 'gift':        console.log(`${user} sent ${d.giftName} (${d.diamondCount} diamonds)`); break;
+    case 'like':        console.log(`${user} liked x ${d.likeCount}`); break;
+    case 'member':      console.log(`${user} joined`); break;
+    case 'roomUserSeq': console.log(`Viewers: ${d.viewerCount}`); break;
+    case 'roomInfo':    console.log(`Room: ${msg.roomId}`); break;
+    default:            console.log(`${msg.event}`); break;
   }
 });
-ws.on('close', () => console.log(`\n📊 Disconnected. Received ${events} events.\n`));
+ws.on('close', () => console.log(`\nDisconnected. Received ${events} events.\n`));
 // Press Ctrl+C to stop. Sandbox allows 2 hours per WebSocket connection.
 ```
 
@@ -239,7 +239,7 @@ try {
 }
 ```
 
-Method groups: signing/connection, live status, rankings/leaderboards, gifts,
+Method groups: connection, live status, rankings/leaderboards, gifts,
 user/profile, content/feed, live analytics, moderation, CAPTCHA solver, captions (legacy).
 See [the full endpoint + tier matrix](https://tik.tools/docs).
 
@@ -416,7 +416,7 @@ client.on('chat', (event) => {
   const user = event.user.uniqueId;
 
   if (msg === '!hello') {
-    console.log(`>> BOT: Welcome ${user}! 👋`);
+    console.log(`>> BOT: Welcome ${user}!`);
   } else if (msg === '!stats') {
     console.log(`>> BOT: ${messageCount} messages, ${giftLeaderboard.size} gifters`);
   } else if (msg === '!top') {
@@ -424,7 +424,7 @@ client.on('chat', (event) => {
       .sort((a, b) => b[1] - a[1])
       .slice(0, 5);
     top.forEach(([name, diamonds], i) => {
-      console.log(`  ${i + 1}. ${name} - ${diamonds} 💎`);
+      console.log(`  ${i + 1}. ${name} - ${diamonds} diamonds`);
     });
   }
 });
@@ -449,13 +449,13 @@ const client = new TikTokLive('streamer', { apiKey: 'KEY' });
 
 // Full autocompletion - your IDE knows the type of `event`
 client.on('chat', (event: ChatEvent) => {
-  console.log(event.user.uniqueId);  // ✓ typed
-  console.log(event.comment);        // ✓ typed
+  console.log(event.user.uniqueId);  // typed
+  console.log(event.comment);        // typed
 });
 
 client.on('gift', (event: GiftEvent) => {
-  console.log(event.giftName);       // ✓ typed
-  console.log(event.diamondCount);   // ✓ typed
+  console.log(event.giftName);       // typed
+  console.log(event.diamondCount);   // typed
 });
 ```
 
@@ -498,21 +498,21 @@ client.on('gift', (event: GiftEvent) => {
 | | tiktok-live-api | tiktok-live-connector | TikTokLive (Python) |
 |---|---|---|---|
 | **Type** | Managed agency-grade platform | Self-hosted client | Self-hosted client |
-| **Hosting** | ✓ Fully managed, 99.9% uptime | You run the client; signing via paid backend | You run the client; signing via paid backend |
-| **TypeScript** | ✓ First-class, fully typed | ✓ Typed | N/A (Python) |
-| **Unreal Engine plugin** | ✓ | ✗ | ✗ |
-| **Gifter Intel (LTV, archetypes)** | ✓ | ✗ | ✗ |
-| **Live Leaderboards (real-time)** | ✓ Regional + global | ✗ | ✗ |
-| **Battle History + Per-Match Timeline** | ✓ | ✗ | ✗ |
-| **League Rankings (Diamond Rush)** | ✓ | ✗ | ✗ |
-| **Real-time Discord + Telegram Alerts** | ✓ | ✗ | ✗ |
-| **Sniper Gap (live battle tracker)** | ✓ | ✗ | ✗ |
-| **Agency CRM + Watchlists** | ✓ | ✗ | ✗ |
-| **Public Profile Pages (creator + gifter)** | ✓ Indexed | ✗ | ✗ |
-| **CAPTCHA Solving** | ✓ Built-in (Pro+) | Via signing backend | Via signing backend |
-| **Feed Discovery** | ✓ See who's live | ✗ | ✗ |
-| **Free evaluation** | 7 days (Sandbox): 20 req/min, 5,000 req/day, 3 concurrent WS, 60 connects/hr, 2h per WS | ✓ MIT-licensed | ✓ MIT-licensed |
-| **ESM + CJS** | ✓ Both supported | ✓ | N/A (Python) |
+| **Hosting** | Fully managed | You run the client; signing via paid backend | You run the client; signing via paid backend |
+| **TypeScript** | First-class, fully typed | Typed | N/A (Python) |
+| **Unreal Engine plugin** | Yes | No | No |
+| **Gifter Intel (LTV, archetypes)** | Yes | No | No |
+| **Live Leaderboards (real-time)** | Regional + global | No | No |
+| **Battle History + Per-Match Timeline** | Yes | No | No |
+| **League Rankings (Diamond Rush)** | Yes | No | No |
+| **Real-time Discord + Telegram Alerts** | Yes | No | No |
+| **Sniper Gap (live battle tracker)** | Yes | No | No |
+| **Agency CRM + Watchlists** | Yes | No | No |
+| **Public Profile Pages (creator + gifter)** | Indexed | No | No |
+| **CAPTCHA Solving** | Built-in (Pro+) | Via signing backend | Via signing backend |
+| **Feed Discovery** | See who's live | No | No |
+| **Free evaluation** | 7 days (Sandbox): 20 req/min, 5,000 req/day, 3 concurrent WS, 60 connects/hr, 2h per WS | MIT-licensed | MIT-licensed |
+| **ESM + CJS** | Both supported | Yes | N/A (Python) |
 
 ## Pricing
 
@@ -521,15 +521,15 @@ Tier is enforced server-side by your API key. Snapshot below; the full feature m
 | Tier | Weekly | Monthly | Req/min | Req/day | Concurrent WS | Connects/hr | WS max duration | Bulk check |
 |---|---|---|---|---|---|---|---|---|
 | Sandbox (7-day evaluation) | - | - | 20 | 5,000 | 3 | 60 | 2h | 5/req |
-| Basic | $7 | $19 | 30 | 10,000 | 20 | Unlimited | 8h | 10/req |
-| Pro | $15 | $49 | 120 | 75,000 | 50 | Unlimited | 12h | 50/req |
-| Ultra | $45 | $149 | 300 | 300,000 | 250 | Unlimited | 24h | 100/req |
-| **Agency** | $119 | $399 | 1,000 | 1,000,000 | 500 | Unlimited | 24h | 200/req |
+| Basic | $7 | $19 | 30 | 10,000 | 20 | No hourly cap | 8h | 10/req |
+| Pro | $15 | $49 | 120 | 75,000 | 50 | No hourly cap | 12h | 50/req |
+| Ultra | $45 | $149 | 300 | 300,000 | 250 | No hourly cap | 24h | 100/req |
+| **Agency** | $119 | $399 | 1,000 | 1,000,000 | 500 | No hourly cap | 24h | 200/req |
 
 - **Sandbox** (free 7-day evaluation from account creation, then a paid plan is required): 20 req/min, 5,000 req/day, 3 concurrent WS, 60 new connects/hr, 2h per WS, masked leaderboards, read-only gift catalog sample. Designed for devs building apps - upgrade when you need real usernames or more connections.
 - **Basic** ($7/wk - $19/mo): 30 req/min, 10,000 req/day, 20 concurrent WS, 8h per WS, masked leaderboards.
 - **Pro** ($15/wk - $49/mo): 120 req/min, 75,000 req/day, 50 concurrent WS, 12h per WS, **unmasked leaderboards**, Feed Discovery, regional leaderboard signed URLs.
-- **Ultra** ($45/wk - $149/mo): 300 req/min, 300,000 req/day, 250 concurrent WS, 24h per WS, **Gift Catalog API** (full TikTok gift catalog continuously re-synced), **League Rankings unmasked**, CSV exports, 99.5% uptime SLA.
+- **Ultra** ($45/wk - $149/mo): 300 req/min, 300,000 req/day, 250 concurrent WS, 24h per WS, **Gift Catalog API** (full TikTok gift catalog continuously re-synced), **League Rankings unmasked**, CSV exports.
 - **Agency** ($119/wk - $399/mo): Everything in Ultra plus **Live Gifter Firehose WS** (region / league / global filters + min-diamond threshold), VIP Telegram alerts, VIP Web Vault (unmasked historical visual access), **gifter intel unmasked**, 500 concurrent WS.
 
 ### Live Gifter Firehose - Agency
@@ -559,10 +559,10 @@ Modes: `global` (all regions), `region` (single region code), `league` (region +
 
 ## Links
 
-- 🌐 **Website**: [tik.tools](https://tik.tools)
-- 📖 **Documentation**: [tik.tools/docs](https://tik.tools/docs)
-- 🐍 **Python SDK**: [pypi.org/project/tiktok-live-api](https://pypi.org/project/tiktok-live-api/)
-- 💻 **GitHub**: [github.com/tiktool/tiktok-live-api](https://github.com/tiktool/tiktok-live-api)
+- **Website**: [tik.tools](https://tik.tools)
+- **Documentation**: [tik.tools/docs](https://tik.tools/docs)
+- **Python SDK**: [pypi.org/project/tiktok-live-api](https://pypi.org/project/tiktok-live-api/)
+- **GitHub**: [github.com/tiktool/tiktok-live-api](https://github.com/tiktool/tiktok-live-api)
 
 ## License
 

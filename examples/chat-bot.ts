@@ -23,7 +23,7 @@ client.on('chat', (event) => {
   const user = event.user.uniqueId;
 
   if (msg === '!hello') {
-    console.log(`>> BOT: Welcome ${user}! 👋`);
+    console.log(`>> BOT: Welcome ${user}!`);
   } else if (msg === '!stats') {
     console.log(`>> BOT: ${messageCount} messages, ${giftLeaderboard.size} gifters`);
   } else if (msg === '!top') {
@@ -31,7 +31,7 @@ client.on('chat', (event) => {
       .sort((a, b) => b[1] - a[1])
       .slice(0, 5);
     top.forEach(([name, diamonds], i) => {
-      console.log(`  ${i + 1}. ${name} - ${diamonds} 💎`);
+      console.log(`  ${i + 1}. ${name} - ${diamonds} diamonds`);
     });
   }
 });

@@ -94,7 +94,7 @@ export class TikTool {
     return { unique_id: uniqueId, username: uniqueId, uniqueId }
   }
 
-  // --- Signing / connection ---
+  // --- Connection ---
   signUrl(url: string) { return this.request('/webcast/sign_url', { method: 'POST', body: { url } }) }
   signWebsocket(body: Record<string, unknown>) { return this.request('/webcast/sign_websocket', { method: 'POST', body }) }
   wsCredentials(uniqueId: string) { return this.request('/webcast/ws_credentials', { query: this.uid(uniqueId) }) }
@@ -146,7 +146,6 @@ export class TikTool {
   hashtagList(query?: Query) { return this.request('/webcast/hashtag_list', { query }) }
   fetch(body: Record<string, unknown>) { return this.request('/webcast/fetch', { method: 'POST', body }) }
   feed(query?: Query) { return this.request('/webcast/feed', { query }) }
-  chat(uniqueId: string, query?: Query) { return this.request('/webcast/chat', { query: { ...this.uid(uniqueId), ...query } }) }
 
   // --- Live analytics ---
   analyticsVideoList(query?: Query) { return this.request('/webcast/live_analytics/video_list', { query }) }

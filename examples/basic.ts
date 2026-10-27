@@ -24,7 +24,7 @@ client.on('chat', (event) => {
 });
 
 client.on('gift', (event) => {
-  console.log(`[gift] ${event.user.uniqueId} sent ${event.giftName} (${event.diamondCount} 💎)`);
+  console.log(`[gift] ${event.user.uniqueId} sent ${event.giftName} (${event.diamondCount} diamonds)`);
 });
 
 client.on('like', (event) => {

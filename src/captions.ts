@@ -28,7 +28,7 @@ import WebSocket from 'ws';
 import type { TikTokCaptionsEventMap } from './types';
 
 const CAPTIONS_BASE = 'wss://api.tik.tools/captions';
-const VERSION = '1.0.0';
+const VERSION = '1.5.1';
 
 /** Options for {@link TikTokCaptions} constructor. */
 export interface TikTokCaptionsOptions {
@@ -54,7 +54,7 @@ type EventHandler<T> = (data: T) => void | Promise<void>;
  *   translate: 'en',
  * });
  * captions.on('caption', (e) => console.log(e.text));
- * captions.on('translation', (e) => console.log(`→ ${e.text}`));
+ * captions.on('translation', (e) => console.log(`-> ${e.text}`));
  * captions.connect();
  * ```
  */
@@ -107,7 +107,7 @@ export class TikTokCaptions {
    * ```typescript
    * captions.on('caption', (event) => {
    *   const prefix = event.speaker ? `[${event.speaker}] ` : '';
-   *   console.log(`${prefix}${event.text}${event.isFinal ? ' ✓' : '...'}`);
+   *   console.log(`${prefix}${event.text}${event.isFinal ? ' [final]' : '...'}`);
    * });
    * ```
    */

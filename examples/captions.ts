@@ -24,12 +24,12 @@ captions.on('connected', (event) => {
 
 captions.on('caption', (event) => {
   const speaker = event.speaker ? `[${event.speaker}] ` : '';
-  const status = event.isFinal ? ' ✓' : '...';
+  const status = event.isFinal ? ' [final]' : '...';
   console.log(`${speaker}${event.text}${status}`);
 });
 
 captions.on('translation', (event) => {
-  console.log(`  → ${event.text}`);
+  console.log(`  -> ${event.text}`);
 });
 
 captions.on('credits', (event) => {
