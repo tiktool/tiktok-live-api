@@ -156,7 +156,9 @@ export class TikTool {
   moderationMutes(uniqueId: string) { return this.request('/webcast/moderation/mutes', { query: this.uid(uniqueId) }) }
   moderationBans(uniqueId: string) { return this.request('/webcast/moderation/bans', { query: this.uid(uniqueId) }) }
 
-  // --- CAPTCHA solver (Pro+) ---
+  // --- Challenge helpers (Pro+) ---
+  // Pass the challenge payload your app received as `body`; resolves to the helper
+  // result object documented at https://tik.tools/docs.
   solvePuzzle(body: Record<string, unknown>) { return this.request('/captcha/solve/puzzle', { method: 'POST', body }) }
   solveRotate(body: Record<string, unknown>) { return this.request('/captcha/solve/rotate', { method: 'POST', body }) }
   solveShapes(body: Record<string, unknown>) { return this.request('/captcha/solve/shapes', { method: 'POST', body }) }

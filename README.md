@@ -240,7 +240,7 @@ try {
 ```
 
 Method groups: connection, live status, rankings/leaderboards, gifts,
-user/profile, content/feed, live analytics, moderation, CAPTCHA solver, captions (legacy).
+user/profile, content/feed, live analytics, moderation, challenge helpers, captions (legacy).
 See [the full endpoint + tier matrix](https://tik.tools/docs).
 
 ## Events (54 v3 event types)
@@ -509,7 +509,7 @@ client.on('gift', (event: GiftEvent) => {
 | **Sniper Gap (live battle tracker)** | Yes | No | No |
 | **Agency CRM + Watchlists** | Yes | No | No |
 | **Public Profile Pages (creator + gifter)** | Indexed | No | No |
-| **CAPTCHA Solving** | Built-in (Pro+) | Via signing backend | Via signing backend |
+| **Challenge helpers** | Built-in (Pro+) | Via signing backend | Via signing backend |
 | **Feed Discovery** | See who's live | No | No |
 | **Free evaluation** | 7 days (Sandbox): 20 req/min, 5,000 req/day, 3 concurrent WS, 60 connects/hr, 2h per WS | MIT-licensed | MIT-licensed |
 | **ESM + CJS** | Both supported | Yes | N/A (Python) |
